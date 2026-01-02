@@ -87,6 +87,9 @@
 
   html {
     @apply bg-background text-foreground scheme-light;
+
+    /* ADD THIS LINE: Reserves space for the scrollbar to prevent layout shifts */
+    scrollbar-gutter: stable;
   }
 
   html[data-theme='dark'] {
