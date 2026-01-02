@@ -1,6 +1,19 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content'
 import { readingTime, calculateWordCountFromHtml } from '@/lib/utils'
 
+export async function getAllWikiPosts() {
+  const posts = await getCollection('wiki')
+  return posts
+    .filter((post) => {
+      return import.meta.env.PROD ? post.data.draft !== true : true
+    })
+    .sort((a, b) => {
+      const orderA = a.data.order ?? 999
+      const orderB = b.data.order ?? 999
+      return orderA - orderB
+    })
+}
+
 export async function getAllAuthors(): Promise<CollectionEntry<'authors'>[]> {
   return await getCollection('authors')
 }

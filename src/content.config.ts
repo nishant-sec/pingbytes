@@ -46,15 +46,23 @@ const projects = defineCollection({
     }),
 })
 
-// 1. Add this new collection
-const learn = defineCollection({
-  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/learn" }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string().optional(),
-    // You can add 'order' to control sorting within folders
-    order: z.number().optional().default(999),
-  }),
-});
+// --- FIX STARTS HERE ---
+// 1. Define the 'wiki' collection (using the blog schema)
+const wiki = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/wiki' }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      description: z.string(),
+      date: z.coerce.date(),
+      order: z.number().optional(),
+      image: image().optional(),
+      tags: z.array(z.string()).optional(),
+      authors: z.array(z.string()).optional(),
+      draft: z.boolean().optional(),
+    }),
+})
 
-export const collections = { blog, authors, projects }
+// 2. EXPORT the 'wiki' collection
+export const collections = { blog, authors, projects, wiki }
+// --- FIX ENDS HERE ---
