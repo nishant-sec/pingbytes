@@ -1,0 +1,92 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import PageHead from '@/components/PageHead.astro'
+import Layout from '@/layouts/Layout.astro'
+import Link from '@/components/Link.astro'
+import { Icon } from 'astro-icon/components'
+
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Wiki",
+  "description": "Collection of learning resources, guides, and interactive tools for developers and system administrators.",
+  "url": pageUrl,
+  "mainEntity": {
+    "@type": "ItemList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Subnet Calculator",
+        "url": new URL("/Wiki/subnet-calculator", Astro.site).href
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Password Generator",
+        "url": new URL("/Wiki/password-generator", Astro.site).href
+      }
+      // Add more items here as you migrate them
+    ]
+  }
+}
+---
+
+<Layout class="max-w-3xl">
+  <PageHead 
+    slot="head" 
+    title="Wiki - Interactive Tools & Guides"
+    description="Free online learning resources and tools for system administrators, developers, and IT professionals."
+  />
+  
+  <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+
+  <Breadcrumbs items={[{ label: 'Wiki', icon: 'lucide:book-open' }]} />
+
+  <article class="flex flex-col gap-y-6">
+    <header class="space-y-2">
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">Wiki</h1>
+      <p class="text-muted-foreground">
+        Interactive tools and practical guides to help you master new skills.
+      </p>
+    </header>
+
+    <div class="space-y-1">
+      
+      <Link
+        href="/Wiki/subnet-calculator"
+        class="group flex items-center gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors"
+      >
+        <Icon name="lucide:network" class="size-5 text-primary shrink-0" />
+        <div class="flex-1 min-w-0">
+          <h2 class="font-semibold group-hover:text-primary transition-colors">
+            Subnet Calculator
+          </h2>
+          <p class="text-sm text-muted-foreground">
+            Calculate subnet masks and network addresses
+          </p>
+        </div>
+        <Icon name="lucide:chevron-right" class="size-4 text-muted-foreground group-hover:text-primary shrink-0" />
+      </Link>
+
+      <Link
+        href="/Wiki/password-generator"
+        class="group flex items-center gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors"
+      >
+        <Icon name="lucide:shield-check" class="size-5 text-primary shrink-0" />
+        <div class="flex-1 min-w-0">
+          <h2 class="font-semibold group-hover:text-primary transition-colors">
+            Password Generator
+          </h2>
+          <p class="text-sm text-muted-foreground">
+            Generate secure passwords and check strength
+          </p>
+        </div>
+        <Icon name="lucide:chevron-right" class="size-4 text-muted-foreground group-hover:text-primary shrink-0" />
+      </Link>
+
+      </div>
+  </article>
+</Layout>

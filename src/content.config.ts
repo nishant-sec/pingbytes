@@ -46,4 +46,15 @@ const projects = defineCollection({
     }),
 })
 
+// 1. Add this new collection
+const learn = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/learn" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    // You can add 'order' to control sorting within folders
+    order: z.number().optional().default(999),
+  }),
+});
+
 export const collections = { blog, authors, projects }
