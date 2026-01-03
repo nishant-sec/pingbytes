@@ -1,0 +1,79 @@
+---
+import type { WikiNode } from '@/lib/data-utils'
+import { cn } from '@/lib/utils'
+import { Icon } from 'astro-icon/components'
+
+interface Props {
+  tree: WikiNode[]
+  currentPostId: string
+  level?: number
+}
+
+const { tree, currentPostId, level = 0 } = Astro.props
+
+// Check if a node should be open (contains current post)
+const isNodeActive = (node: WikiNode): boolean => {
+  if (node.id === currentPostId) return true
+  return node.children.some(child => isNodeActive(child))
+}
+---
+
+<ul class={cn("w-full space-y-0.5", level > 0 && "ml-3")}>
+  {tree.map((node) => {
+    const isActive = node.id === currentPostId
+    const isChildActive = node.children.some(isNodeActive)
+    const hasChildren = node.children.length > 0
+    const isOpen = isActive || isChildActive 
+
+    return (
+      <li>
+        {hasChildren ? (
+          <div class="group">
+             <button 
+                type="button"
+                class={cn(
+                  "flex w-full items-start gap-2 rounded-md px-2 py-1.5 text-sm text-left transition-colors hover:bg-muted/50 subpixel-antialiased",
+                  isChildActive ? "text-foreground" : "text-muted-foreground"
+                )}
+                onclick="this.nextElementSibling.classList.toggle('open'); this.querySelector('.chevron').classList.toggle('rotate-90')"
+                aria-expanded={isOpen ? "true" : "false"}
+             >
+                {/* Icon aligned to top with margin adjustment for multiline text */}
+                <Icon 
+                   name="lucide:chevron-right" 
+                   class={cn("chevron mt-0.5 size-3.5 shrink-0 transition-transform duration-200", isOpen && "rotate-90")} 
+                />
+                <span class="break-words whitespace-normal leading-snug">{node.title}</span>
+             </button>
+             
+             {/* Collapsible Container */}
+             <div class={cn("grid transition-[grid-template-rows] duration-300 ease-out", isOpen ? "open grid-rows-[1fr]" : "grid-rows-[0fr]")}>
+               <div class="overflow-hidden">
+                 <Astro.self tree={node.children} currentPostId={currentPostId} level={level + 1} />
+               </div>
+             </div>
+          </div>
+        ) : (
+          <a
+            href={node.href}
+            class={cn(
+              "flex items-start gap-2 rounded-md px-2 py-1.5 text-sm transition-colors subpixel-antialiased",
+              "ml-[22px] w-[calc(100%-22px)]", // Indent to align with folder text
+              isActive 
+                ? "bg-muted text-foreground" 
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+          >
+             <span class="break-words whitespace-normal leading-snug">{node.title}</span>
+          </a>
+        )}
+      </li>
+    )
+  })}
+</ul>
+
+<style>
+  .open {
+    grid-template-rows: 1fr;
+  }
+</style>
