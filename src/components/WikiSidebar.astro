@@ -1,0 +1,62 @@
+---
+import type { WikiNode } from '@/lib/data-utils'
+import { cn } from '@/lib/utils'
+import { Icon } from 'astro-icon/components'
+
+interface Props {
+  tree: WikiNode[]
+  currentPostId: string
+  level?: number
+}
+
+const { tree, currentPostId, level = 0 } = Astro.props
+
+// Helper to check if a node or its children are active
+const isNodeActive = (node: WikiNode): boolean => {
+  if (node.id === currentPostId) return true
+  return node.children.some(child => isNodeActive(child))
+}
+---
+
+<ul class={cn("w-full space-y-1", level > 0 && "pl-4 mt-1 border-l border-border/50 ml-2")}>
+  {tree.map((node) => {
+    const isActive = node.id === currentPostId
+    const isChildActive = node.children.some(isNodeActive)
+    const isOpen = isActive || isChildActive
+    
+    return (
+      <li>
+        {node.href ? (
+          <a
+            href={node.href}
+            class={cn(
+              "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors",
+              isActive 
+                ? "bg-muted text-foreground font-medium" 
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+          >
+             <Icon 
+               name={node.children.length > 0 ? (isOpen ? "lucide:folder-open" : "lucide:folder") : "lucide:file-text"} 
+               class="size-4 shrink-0" 
+             />
+             <span class="truncate">{node.title}</span>
+          </a>
+        ) : (
+          /* Folder Label (no index file) */
+          <div class="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-foreground/80">
+             <Icon name="lucide:folder" class="size-4 shrink-0" />
+             <span>{node.title}</span>
+          </div>
+        )}
+
+        {/* Recursive render for children using Astro.self */}
+        {node.children.length > 0 && (
+          <div class={cn(!isOpen && "hidden")}>
+             <Astro.self tree={node.children} currentPostId={currentPostId} level={level + 1} />
+          </div>
+        )}
+      </li>
+    )
+  })}
+</ul>

@@ -315,3 +315,86 @@ export async function getTOCSections(postId: string): Promise<TOCSection[]> {
 
   return sections
 }
+
+// --- NEW WIKI TREE UTILS ---
+
+export interface WikiNode {
+  title: string
+  id?: string
+  slug?: string
+  href?: string
+  children: WikiNode[]
+  order?: number
+  isIndex?: boolean
+}
+
+export async function getWikiTree(): Promise<WikiNode[]> {
+  const posts = await getAllWikiPosts()
+  const root: WikiNode[] = []
+  
+  // Sort posts by order first
+  const sortedPosts = posts.sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999))
+
+  for (const post of sortedPosts) {
+    const parts = post.id.split('/')
+    let currentLevel = root
+
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i]
+      const isLast = i === parts.length - 1
+      
+      let node = currentLevel.find(n => n.slug === part)
+      
+      if (!node) {
+        node = {
+          title: part.charAt(0).toUpperCase() + part.slice(1).replace(/-/g, ' '),
+          slug: part,
+          children: [],
+          order: 999
+        }
+        currentLevel.push(node)
+      }
+
+      if (isLast) {
+        if (part === 'index' && i > 0) {
+            node.title = post.data.title
+            node.href = `/wiki/${post.id.replace(/\/index$/, '')}`
+            node.id = post.id
+            node.order = post.data.order
+            node.isIndex = true
+        } else if (part !== 'index') {
+            node.title = post.data.title
+            node.href = `/wiki/${post.id}`
+            node.id = post.id
+            node.order = post.data.order
+        }
+      }
+      
+      currentLevel.sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
+      currentLevel = node.children
+    }
+  }
+  
+  // Merge index nodes into their parent folders for cleaner navigation
+  function mergeIndexNodes(nodes: WikiNode[]) {
+    for (const node of nodes) {
+      if (node.children.length > 0) {
+        const indexChild = node.children.find(c => c.slug === 'index')
+        if (indexChild) {
+          node.title = indexChild.title
+          node.href = indexChild.href
+          node.id = indexChild.id
+          node.order = indexChild.order
+          node.isIndex = true
+          node.children = node.children.filter(c => c.slug !== 'index')
+        }
+        mergeIndexNodes(node.children)
+      }
+    }
+  }
+
+  mergeIndexNodes(root)
+  root.sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
+  
+  return root
+}

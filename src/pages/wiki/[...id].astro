@@ -3,10 +3,12 @@ import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import PostHead from '@/components/PostHead.astro'
 import TOCHeader from '@/components/TOCHeader.astro'
 import TOCSidebar from '@/components/TOCSidebar.astro'
+import WikiSidebar from '@/components/WikiSidebar.astro' 
 import { badgeVariants } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import Layout from '@/layouts/Layout.astro'
-import { getAllWikiPosts, parseAuthors } from '@/lib/data-utils'
+import { getAllWikiPosts, parseAuthors, getWikiTree } from '@/lib/data-utils'
 import { formatDate, getTagVariant, readingTime, calculateWordCountFromHtml } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
 import { Image } from 'astro:assets'
@@ -35,7 +37,10 @@ const authors = await parseAuthors(post.data.authors ?? [])
 const wordCount = calculateWordCountFromHtml(post.body || '')
 const postReadingTime = readingTime(wordCount)
 
-// 5. Generate Simple TOC
+// 5. Get Wiki Tree for Sidebar
+const wikiTree = await getWikiTree()
+
+// 6. Generate Simple TOC
 const tocSections = [
   {
     type: 'parent' as const,
@@ -55,89 +60,98 @@ const tocSections = [
   {/* Table of Contents Header (Visible on Mobile) */}
   {headings?.length > 0 && <TOCHeader slot="table-of-contents" headings={headings} />}
 
-  <section class="grid grid-cols-[minmax(0px,1fr)_min(calc(var(--breakpoint-md)-2rem),100%)_minmax(0px,1fr)] gap-y-6">
+  <div class="grid w-full gap-10 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)_240px]">
     
-    {/* Breadcrumbs */}
-    <div class="col-start-2">
-      <Breadcrumbs
-        items={[
-          { href: '/wiki', label: 'Wiki', icon: 'lucide:book-open' },
-          { label: post.data.title, icon: 'lucide:file-text' },
-        ]}
-      />
-    </div>
+    {/* Left Sidebar: Wiki Navigation */}
+    <aside class="fixed top-24 z-30 -ml-2 hidden h-[calc(100vh-6rem)] w-full shrink-0 overflow-y-auto border-r md:sticky lg:block">
+        <ScrollArea client:load className="h-full pr-4">
+            <WikiSidebar tree={wikiTree} currentPostId={post.id} />
+        </ScrollArea>
+    </aside>
 
-    {/* Featured Image */}
-    {post.data.image && (
-      <Image
-        src={post.data.image}
-        alt={post.data.title}
-        width={1200}
-        height={630}
-        class="col-span-full mx-auto w-full max-w-5xl object-cover"
-      />
-    )}
+    {/* Main Content Area */}
+    <section class="flex flex-col gap-y-6 min-w-0">
+      
+      {/* Breadcrumbs */}
+      <div>
+        <Breadcrumbs
+          items={[
+            { href: '/wiki', label: 'Wiki', icon: 'lucide:book-open' },
+            { label: post.data.title, icon: 'lucide:file-text' },
+          ]}
+        />
+      </div>
 
-    {/* Post Header */}
-    <section class="col-start-2 flex flex-col gap-y-6 text-center">
-      <div class="flex flex-col">
-        <h1 class="mb-2 scroll-mt-31 text-3xl leading-tight font-medium sm:text-4xl">
-          {post.data.title}
-        </h1>
+      {/* Featured Image */}
+      {post.data.image && (
+        <Image
+          src={post.data.image}
+          alt={post.data.title}
+          width={1200}
+          height={630}
+          class="mx-auto w-full max-w-5xl rounded-lg object-cover shadow-sm"
+        />
+      )}
 
-        <div class="text-muted-foreground divide-border mb-4 flex flex-col items-center justify-center divide-y text-xs sm:flex-row sm:flex-wrap sm:divide-x sm:divide-y-0 sm:text-sm">
-          {authors.length > 0 && (
-            <div class="flex w-full items-center justify-center gap-x-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
-              {authors.map((author) => (
-                <div class="flex items-center gap-x-1.5">
-                  <Image src={author.avatar} alt={author.name} width={20} height={20} class="rounded-full" />
-                  <span>{author.name}</span>
-                </div>
-              ))}
-            </div>
-          )}
+      {/* Post Header */}
+      <div class="flex flex-col gap-y-4 border-b pb-6">
+          <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
+            {post.data.title}
+          </h1>
 
-          <div class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
+          <div class="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+            {authors.length > 0 && (
+              <div class="flex items-center gap-x-2">
+                {authors.map((author) => (
+                  <div class="flex items-center gap-x-1.5">
+                    <Image src={author.avatar} alt={author.name} width={20} height={20} class="rounded-full" />
+                    <span>{author.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
             <span>{formatDate(post.data.date)}</span>
-          </div>
-
-          <div class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
             <span>{postReadingTime}</span>
           </div>
-        </div>
 
-        <div class="flex flex-wrap justify-center gap-2">
-          {post.data.tags?.map((tag) => {
-            const { variant, className } = getTagVariant(tag)
-            return (
-              <a href={`/tags/${tag}`} class={`${badgeVariants({ variant })} ${className || ''}`}>
-                <Icon name="lucide:hash" class="size-3" />
-                {tag}
-              </a>
-            )
-          })}
-        </div>
+          {post.data.tags && post.data.tags.length > 0 && (
+            <div class="flex flex-wrap gap-2 pt-2">
+              {post.data.tags.map((tag) => {
+                const { variant, className } = getTagVariant(tag)
+                return (
+                  <a href={`/tags/${tag}`} class={badgeVariants({ variant, className })}>
+                    <Icon name="lucide:hash" class="mr-1 size-3" />
+                    {tag}
+                  </a>
+                )
+              })}
+            </div>
+          )}
       </div>
+
+      {/* Markdown Content */}
+      <article class="prose dark:prose-invert max-w-none">
+        <Content />
+      </article>
+
     </section>
 
-    {/* Main Content Area (Stays in Middle) */}
-    <article class="prose col-start-2 max-w-none">
-      <Content />
-    </article>
-
-    {/* Sidebar Table of Contents (Moved to Right Column) */}
+    {/* Right Sidebar: TOC */}
     {tocSections.length > 0 && (
-      <div class="col-start-3">
-        <TOCSidebar sections={tocSections} currentPostId={currentPostId} />
+      <div class="hidden xl:block">
+        <div class="sticky top-24 h-[calc(100vh-6rem)] overflow-y-auto">
+             <TOCSidebar sections={tocSections} currentPostId={currentPostId} />
+        </div>
       </div>
     )}
 
-  </section>
+  </div>
 
   <Button
     variant="outline"
     size="icon"
-    className="group fixed right-8 bottom-8 z-50 hidden" 
+    className="group fixed right-8 bottom-8 z-50 hidden"
     id="scroll-to-top"
     title="Scroll to top"
   >
