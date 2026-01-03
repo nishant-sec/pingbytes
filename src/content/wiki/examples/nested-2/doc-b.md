@@ -7,4 +7,4 @@ draft: false
 ---
 
 ## Nested Document B
-This is a document which is inside `examples/nested-2`.
+This is a gold document which is inside `examples/nested-2`.
