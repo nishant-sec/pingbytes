@@ -9,7 +9,7 @@ authors: ['nishant']
 
 ## What is an IP Address?
 
-An IP address is a unique address that identifies a device on the internet or a local network. IP stands for "Internet Protocol," which is the set of rules governing the format of data sent via the internet or local network.
+An IP address is a unique address that identifies a device on the internet. IP stands for "Internet Protocol," which is the set of rules governing the format of data sent via the internet or local network.
 
 ### Binary Representation
 
