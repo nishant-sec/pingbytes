@@ -316,7 +316,7 @@ export async function getTOCSections(postId: string): Promise<TOCSection[]> {
   return sections
 }
 
-// --- NEW WIKI TREE UTILS ---
+// --- UPDATED WIKI TREE UTILS ---
 
 export interface WikiNode {
   title: string
@@ -325,7 +325,6 @@ export interface WikiNode {
   href?: string
   children: WikiNode[]
   order?: number
-  isIndex?: boolean
 }
 
 export async function getWikiTree(): Promise<WikiNode[]> {
@@ -356,45 +355,32 @@ export async function getWikiTree(): Promise<WikiNode[]> {
       }
 
       if (isLast) {
-        if (part === 'index' && i > 0) {
-            node.title = post.data.title
-            node.href = `/wiki/${post.id.replace(/\/index$/, '')}`
-            node.id = post.id
-            node.order = post.data.order
-            node.isIndex = true
-        } else if (part !== 'index') {
-            node.title = post.data.title
-            node.href = `/wiki/${post.id}`
-            node.id = post.id
-            node.order = post.data.order
-        }
+        // Assign file data to the node
+        // If it's an index file, we title it "Overview" (or keep title) but DO NOT merge it up.
+        // This ensures the folder remains a container.
+        node.title = post.data.title
+        node.href = `/wiki/${post.id}`
+        node.id = post.id
+        node.order = post.data.order
       }
       
       currentLevel.sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
       currentLevel = node.children
     }
   }
-  
-  // Merge index nodes into their parent folders for cleaner navigation
-  function mergeIndexNodes(nodes: WikiNode[]) {
-    for (const node of nodes) {
-      if (node.children.length > 0) {
-        const indexChild = node.children.find(c => c.slug === 'index')
-        if (indexChild) {
-          node.title = indexChild.title
-          node.href = indexChild.href
-          node.id = indexChild.id
-          node.order = indexChild.order
-          node.isIndex = true
-          node.children = node.children.filter(c => c.slug !== 'index')
-        }
-        mergeIndexNodes(node.children)
-      }
-    }
-  }
 
-  mergeIndexNodes(root)
-  root.sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
+  // Final cleanup: Ensure folders don't have hrefs (just in case logic above added one to a mid-level node)
+  // Actually, in our logic, 'node' is reused. If we have a file 'foo' and folder 'foo/bar',
+  // 'foo' is both a file and a folder. 
+  // To strictly separate "Folder" (collapsible) from "File" (link):
+  // If a node has children AND an href, usually we want to split them, but simplest is:
+  // If it has children, treat it as a folder. The content is accessible via the file node.
+  
+  // In the loop above, if we process 'folder/index', 'folder' is a node, 'index' is a child. 
+  // So 'folder' has no href. Perfect.
+  // If we process 'folder' (file) and 'folder/child' (file), then 'folder' has href AND children.
+  // In that rare case, the UI will decide. But usually in Astro content, 
+  // you have 'folder.md' OR 'folder/index.md'.
   
   return root
 }

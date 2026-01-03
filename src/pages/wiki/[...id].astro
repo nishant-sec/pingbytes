@@ -3,7 +3,7 @@ import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import PostHead from '@/components/PostHead.astro'
 import TOCHeader from '@/components/TOCHeader.astro'
 import TOCSidebar from '@/components/TOCSidebar.astro'
-import WikiSidebar from '@/components/WikiSidebar.astro' 
+import WikiSidebar from '@/components/WikiSidebar.astro'
 import { badgeVariants } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -60,17 +60,31 @@ const tocSections = [
   {/* Table of Contents Header (Visible on Mobile) */}
   {headings?.length > 0 && <TOCHeader slot="table-of-contents" headings={headings} />}
 
-  <div class="grid w-full gap-10 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)_240px]">
+  {/* Main Grid Layout 
+      h-fit ensures the grid doesn't try to stretch unnecessarily during transitions
+  */}
+  <div class="grid h-fit w-full gap-10 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)_240px]">
     
-    {/* Left Sidebar: Wiki Navigation */}
-    <aside class="fixed top-24 z-30 -ml-2 hidden h-[calc(100vh-6rem)] w-full shrink-0 overflow-y-auto border-r md:sticky lg:block">
+    {/* Left Sidebar: Wiki Navigation 
+        transition:animate="none" prevents the 'double-vision' text bolding effect
+    */}
+    <aside 
+      class="fixed top-24 z-30 -ml-2 hidden h-[calc(100vh-6rem)] w-full shrink-0 overflow-y-auto border-r md:sticky lg:block"
+      transition:animate="none"
+    >
         <ScrollArea client:load className="h-full pr-4">
             <WikiSidebar tree={wikiTree} currentPostId={post.id} />
         </ScrollArea>
     </aside>
 
-    {/* Main Content Area */}
-    <section class="flex flex-col gap-y-6 min-w-0">
+    {/* Main Content Area 
+        transition:animate="fade" ensures ONLY this part animates
+        min-w-0 prevents flexbox blowout
+    */}
+    <section 
+      class="flex min-w-0 flex-col gap-y-6" 
+      transition:animate="fade"
+    >
       
       {/* Breadcrumbs */}
       <div>
@@ -137,10 +151,12 @@ const tocSections = [
 
     </section>
 
-    {/* Right Sidebar: TOC */}
+    {/* Right Sidebar: TOC 
+        transition:animate="none" stabilizes the right side
+    */}
     {tocSections.length > 0 && (
-      <div class="hidden xl:block">
-        <div class="sticky top-24 h-[calc(100vh-6rem)] overflow-y-auto">
+      <div class="hidden xl:block" transition:animate="none">
+        <div class="sticky top-24 h-[calc(100vh-6rem)] overflow-y-auto scrollbar-slim">
              <TOCSidebar sections={tocSections} currentPostId={currentPostId} />
         </div>
       </div>
@@ -157,6 +173,25 @@ const tocSections = [
   >
     <Icon name="lucide:arrow-up" class="mx-auto size-4 transition-all group-hover:-translate-y-0.5" />
   </Button>
+
+  <style>
+    /* Slim Scrollbar for Webkit browsers */
+    .scrollbar-slim::-webkit-scrollbar {
+      width: 4px; 
+    }
+    .scrollbar-slim::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .scrollbar-slim::-webkit-scrollbar-thumb {
+      background-color: var(--border);
+      border-radius: 20px;
+    }
+    /* Firefox */
+    .scrollbar-slim {
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+  </style>
 
   <script>
     document.addEventListener('astro:page-load', () => {
