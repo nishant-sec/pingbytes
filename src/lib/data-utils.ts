@@ -1,6 +1,8 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content'
 import { readingTime, calculateWordCountFromHtml } from '@/lib/utils'
 
+// --- WIKI SPECIFIC FUNCTIONS ---
+
 export async function getAllWikiPosts() {
   const posts = await getCollection('wiki')
   return posts
@@ -8,11 +10,170 @@ export async function getAllWikiPosts() {
       return import.meta.env.PROD ? post.data.draft !== true : true
     })
     .sort((a, b) => {
+      // Sort by order first, then by date if needed
+      const orderA = a.data.order ?? 999
+      const orderB = b.data.order ?? 999
+      if (orderA !== orderB) return orderA - orderB
+      return a.data.date.valueOf() - b.data.date.valueOf()
+    })
+}
+
+export async function getWikiPostById(
+  postId: string,
+): Promise<CollectionEntry<'wiki'> | null> {
+  const allPosts = await getAllWikiPosts()
+  return allPosts.find((post) => post.id === postId) || null
+}
+
+export async function getWikiSubpostsForParent(
+  parentId: string,
+): Promise<CollectionEntry<'wiki'>[]> {
+  const posts = await getAllWikiPosts()
+  return posts
+    .filter(
+      (post) =>
+        isSubpost(post.id) &&
+        getParentId(post.id) === parentId,
+    )
+    .sort((a, b) => {
       const orderA = a.data.order ?? 999
       const orderB = b.data.order ?? 999
       return orderA - orderB
     })
 }
+
+export async function hasWikiSubposts(postId: string): Promise<boolean> {
+  const subposts = await getWikiSubpostsForParent(postId)
+  return subposts.length > 0
+}
+
+export async function getParentWikiPost(
+  subpostId: string,
+): Promise<CollectionEntry<'wiki'> | null> {
+  if (!isSubpost(subpostId)) {
+    return null
+  }
+
+  const parentId = getParentId(subpostId)
+  const allPosts = await getAllWikiPosts()
+  return allPosts.find((post) => post.id === parentId) || null
+}
+
+export async function getWikiSubpostCount(parentId: string): Promise<number> {
+  const subposts = await getWikiSubpostsForParent(parentId)
+  return subposts.length
+}
+
+export async function getWikiPostReadingTime(postId: string): Promise<string> {
+  const post = await getWikiPostById(postId)
+  if (!post) return readingTime(0)
+
+  const wordCount = calculateWordCountFromHtml(post.body)
+  return readingTime(wordCount)
+}
+
+export async function getWikiCombinedReadingTime(postId: string): Promise<string> {
+  const post = await getWikiPostById(postId)
+  if (!post) return readingTime(0)
+
+  let totalWords = calculateWordCountFromHtml(post.body)
+
+  if (!isSubpost(postId)) {
+    const subposts = await getWikiSubpostsForParent(postId)
+    for (const subpost of subposts) {
+      totalWords += calculateWordCountFromHtml(subpost.body)
+    }
+  }
+
+  return readingTime(totalWords)
+}
+
+export async function getAdjacentWikiPosts(currentId: string): Promise<{
+  newer: CollectionEntry<'wiki'> | null
+  older: CollectionEntry<'wiki'> | null
+  parent: CollectionEntry<'wiki'> | null
+}> {
+  const allPosts = await getAllWikiPosts()
+
+  if (isSubpost(currentId)) {
+    const parentId = getParentId(currentId)
+    const parent = await getWikiPostById(parentId)
+    const subposts = await getWikiSubpostsForParent(parentId)
+
+    const currentIndex = subposts.findIndex((post) => post.id === currentId)
+    if (currentIndex === -1) {
+      return { newer: null, older: null, parent }
+    }
+
+    return {
+      newer:
+        currentIndex < subposts.length - 1 ? subposts[currentIndex + 1] : null,
+      older: currentIndex > 0 ? subposts[currentIndex - 1] : null,
+      parent,
+    }
+  }
+
+  // Logic for top-level wiki posts (if you want navigation between them)
+  const parentPosts = allPosts.filter((post) => !isSubpost(post.id))
+  const currentIndex = parentPosts.findIndex((post) => post.id === currentId)
+
+  if (currentIndex === -1) {
+    return { newer: null, older: null, parent: null }
+  }
+
+  return {
+    newer: currentIndex < parentPosts.length - 1 ? parentPosts[currentIndex + 1] : null,
+    older: currentIndex > 0 ? parentPosts[currentIndex - 1] : null,
+    parent: null,
+  }
+}
+
+export async function getWikiTOCSections(postId: string): Promise<TOCSection[]> {
+  const post = await getWikiPostById(postId)
+  if (!post) return []
+
+  const parentId = isSubpost(postId) ? getParentId(postId) : postId
+  const parentPost = isSubpost(postId) ? await getWikiPostById(parentId) : post
+
+  if (!parentPost) return []
+
+  const sections: TOCSection[] = []
+
+  const { headings: parentHeadings } = await render(parentPost)
+  if (parentHeadings.length > 0) {
+    sections.push({
+      type: 'parent',
+      title: 'Overview',
+      headings: parentHeadings.map((heading) => ({
+        slug: heading.slug,
+        text: heading.text,
+        depth: heading.depth,
+      })),
+    })
+  }
+
+  const subposts = await getWikiSubpostsForParent(parentId)
+  for (const subpost of subposts) {
+    const { headings: subpostHeadings } = await render(subpost)
+    if (subpostHeadings.length > 0) {
+      sections.push({
+        type: 'subpost',
+        title: subpost.data.title,
+        headings: subpostHeadings.map((heading, index) => ({
+          slug: heading.slug,
+          text: heading.text,
+          depth: heading.depth,
+          isSubpostTitle: index === 0,
+        })),
+        subpostId: subpost.id,
+      })
+    }
+  }
+
+  return sections
+}
+
+// --- EXISTING BLOG & SHARED FUNCTIONS ---
 
 export async function getAllAuthors(): Promise<CollectionEntry<'authors'>[]> {
   return await getCollection('authors')
