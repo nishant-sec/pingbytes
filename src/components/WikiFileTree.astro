@@ -1,0 +1,63 @@
+---
+import { Icon } from 'astro-icon/components'
+import { cn } from '@/lib/utils'
+import type { WikiNode } from '@/lib/data-utils' 
+
+interface Props {
+  node: WikiNode
+  currentPostId: string
+  depth?: number
+}
+
+const { node, currentPostId, depth = 0 } = Astro.props
+const isCurrent = node.id === currentPostId
+const hasChildren = node.children.length > 0
+
+// Create a unique, safe ID for the folder persistence
+const nodeId = `folder-${node.id.replace(/\//g, '__')}`
+---
+
+<li class="w-full list-none">
+  {hasChildren ? (
+    <details 
+      id={nodeId} 
+      open={node.hasActiveChild} 
+      class="group js-wiki-folder"
+    >
+      <summary 
+        class={cn(
+          "flex w-full cursor-pointer items-start justify-between rounded-md px-2 py-1.5 text-sm font-medium transition-colors hover:bg-muted/50 text-foreground/80 hover:text-foreground",
+          depth > 0 && "ml-2 border-l border-border/50 pl-4"
+        )}
+      >
+        <div class="flex items-start gap-2 text-left">
+           <span class="break-words whitespace-normal leading-snug">{node.title}</span>
+        </div>
+        <Icon 
+          name="lucide:chevron-right" 
+          class="size-3.5 mt-0.5 text-muted-foreground transition-transform duration-200 group-open:rotate-90 shrink-0" 
+        />
+      </summary>
+      
+      <ul class="mt-1 flex flex-col gap-0.5 border-l border-border/40 ml-2.5 pl-1">
+        {node.children.map((child) => (
+          <Astro.self node={child} currentPostId={currentPostId} depth={depth + 1} />
+        ))}
+      </ul>
+      
+    </details>
+  ) : (
+    <a
+      href={`/wiki/${node.id}`}
+      class={cn(
+        "flex w-full items-start gap-2 rounded-md px-2 py-1.5 text-sm transition-colors",
+        depth > 0 && "ml-2 pl-4",
+        isCurrent 
+          ? "bg-primary/10 text-primary font-medium" 
+          : "text-foreground/70 hover:bg-muted/50 hover:text-foreground"
+      )}
+    >
+      <span class="break-words whitespace-normal leading-snug">{node.title}</span>
+    </a>
+  )}
+</li>

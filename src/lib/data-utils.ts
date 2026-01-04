@@ -315,3 +315,102 @@ export async function getTOCSections(postId: string): Promise<TOCSection[]> {
 
   return sections
 }
+
+/* === WIKI TREE LOGIC === */
+
+export type WikiNode = {
+  id: string
+  slug: string
+  title: string
+  children: WikiNode[]
+  order: number
+  isFolder: boolean
+  hasActiveChild?: boolean
+}
+
+export async function getWikiTree(rootPath: string = ''): Promise<WikiNode[]> {
+  const allPosts = await getAllWikiPosts() 
+  
+  // Filter posts that belong to the requested root folder
+  const relevantPosts = rootPath 
+    ? allPosts.filter(post => post.id.startsWith(rootPath + '/'))
+    : allPosts
+
+  const tree: WikiNode[] = []
+  const map = new Map<string, WikiNode>()
+
+  relevantPosts.forEach((post) => {
+    // Remove the rootPath prefix for relative tree construction
+    const relativeId = rootPath ? post.id.slice(rootPath.length + 1) : post.id
+    const parts = relativeId.split('/')
+    
+    let currentPath = ''
+
+    parts.forEach((part, index) => {
+      const isLast = index === parts.length - 1
+      
+      // Reconstruct full ID for linking
+      const fullId = rootPath ? `${rootPath}/${currentPath ? currentPath + '/' : ''}${part}` : `${currentPath ? currentPath + '/' : ''}${part}`
+      
+      currentPath = currentPath ? `${currentPath}/${part}` : part
+      const mapKey = currentPath
+
+      if (!map.has(mapKey)) {
+        // Create new node
+        const node: WikiNode = {
+          id: fullId,
+          slug: fullId, 
+          // Format title: use post title if it's the file, otherwise capitalize folder name
+          title: isLast ? post.data.title : part.charAt(0).toUpperCase() + part.slice(1).replace(/-/g, ' '),
+          children: [],
+          order: isLast ? (post.data.order ?? 999) : 999,
+          isFolder: !isLast,
+        }
+        
+        map.set(mapKey, node)
+
+        // Attach to parent
+        const parentPath = parts.slice(0, index).join('/')
+        if (parentPath) {
+          const parent = map.get(parentPath)
+          if (parent) {
+            parent.children.push(node)
+            parent.isFolder = true
+          }
+        } else {
+          tree.push(node)
+        }
+      } else if (isLast) {
+        // Update existing folder placeholder with actual file data (if index.md exists for a folder)
+        const node = map.get(mapKey)!
+        node.title = post.data.title
+        node.order = post.data.order ?? 999
+      }
+    })
+  })
+
+  // Recursive Sort: Order by 'order' prop, then alphabetical
+  const sortNodes = (nodes: WikiNode[]) => {
+    nodes.sort((a, b) => {
+      if (a.order !== b.order) return a.order - b.order
+      return a.title.localeCompare(b.title)
+    })
+    nodes.forEach(node => sortNodes(node.children))
+  }
+
+  sortNodes(tree)
+  return tree
+}
+
+export function setActiveFlags(nodes: WikiNode[], currentId: string): boolean {
+  let hasActive = false
+  for (const node of nodes) {
+    const isActive = node.id === currentId
+    const childActive = setActiveFlags(node.children, currentId)
+    if (isActive || childActive) {
+      node.hasActiveChild = true
+      hasActive = true
+    }
+  }
+  return hasActive
+}
