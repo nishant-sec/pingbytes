@@ -3,6 +3,8 @@ import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import PostHead from '@/components/PostHead.astro'
 import TOCHeader from '@/components/TOCHeader.astro'
 import TOCSidebar from '@/components/TOCSidebar.astro'
+// 1. IMPORT THE NEW SIDEBAR
+import WikiSidebar from '@/components/WikiSidebar.astro' 
 import { badgeVariants } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import Layout from '@/layouts/Layout.astro'
@@ -13,7 +15,7 @@ import { Image } from 'astro:assets'
 import { render } from 'astro:content'
 import type { CollectionEntry } from 'astro:content'
 
-// 1. Fetch all Wiki posts to generate routes
+// Fetch all Wiki posts to generate routes
 export async function getStaticPaths() {
   const posts = await getAllWikiPosts()
   return posts.map((post) => ({
@@ -25,17 +27,17 @@ export async function getStaticPaths() {
 const post = Astro.props
 const currentPostId = Astro.params.id
 
-// 2. Render content and headings
+// Render content and headings
 const { Content, headings } = await render(post)
 
-// 3. Handle Authors
+// Handle Authors
 const authors = await parseAuthors(post.data.authors ?? [])
 
-// 4. Calculate Reading Time
+// Calculate Reading Time
 const wordCount = calculateWordCountFromHtml(post.body || '')
 const postReadingTime = readingTime(wordCount)
 
-// 5. Generate Simple TOC
+// Generate Simple TOC
 const tocSections = [
   {
     type: 'parent' as const,
@@ -55,8 +57,14 @@ const tocSections = [
   {/* Table of Contents Header (Visible on Mobile) */}
   {headings?.length > 0 && <TOCHeader slot="table-of-contents" headings={headings} />}
 
+  {/* 2. UPDATE GRID LAYOUT if needed, but your current one supports 3 columns */}
   <section class="grid grid-cols-[minmax(0px,1fr)_min(calc(var(--breakpoint-md)-2rem),100%)_minmax(0px,1fr)] gap-y-6">
     
+    {/* 3. ADD SIDEBAR TO LEFT COLUMN (col-start-1) */}
+    <div class="col-start-1">
+      <WikiSidebar />
+    </div>
+
     {/* Breadcrumbs */}
     <div class="col-start-2">
       <Breadcrumbs
@@ -120,12 +128,12 @@ const tocSections = [
       </div>
     </section>
 
-    {/* Main Content Area (Stays in Middle) */}
+    {/* Main Content Area */}
     <article class="prose col-start-2 max-w-none">
       <Content />
     </article>
 
-    {/* Sidebar Table of Contents (Moved to Right Column) */}
+    {/* Sidebar Table of Contents (Right Column) */}
     {tocSections.length > 0 && (
       <div class="col-start-3">
         <TOCSidebar sections={tocSections} currentPostId={currentPostId} />
@@ -137,7 +145,7 @@ const tocSections = [
   <Button
     variant="outline"
     size="icon"
-    className="group fixed right-8 bottom-8 z-50 hidden" 
+    className="group fixed right-8 bottom-8 z-50 hidden"
     id="scroll-to-top"
     title="Scroll to top"
   >

@@ -1,0 +1,87 @@
+---
+import Link from '@/components/Link.astro'
+import { Icon } from 'astro-icon/components'
+import type { CollectionEntry } from 'astro:content'
+
+// Define the shape of the tree node
+type TreeNode = {
+  type: 'file' | 'folder'
+  name: string
+  path: string
+  data?: CollectionEntry<'wiki'>
+  children: TreeNode[]
+}
+
+interface Props {
+  item: TreeNode
+  currentId: string
+}
+
+const { item, currentId = '' } = Astro.props
+
+// Logic to determine if folder should be open
+// We check if the currentId starts with the folder's path (plus a slash to be precise)
+const isActivePath = item.type === 'folder' && (currentId === item.path || currentId.startsWith(item.path + '/'))
+
+// Logic to determine if this specific file is active
+const isActiveFile = item.type === 'file' && item.data?.id === currentId
+---
+
+{
+  item.type === 'folder' ? (
+    <li class="w-full">
+      <details open={isActivePath} class="group/details">
+        <summary class="hover:bg-muted/50 hover:text-foreground text-muted-foreground flex w-full cursor-pointer list-none items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium transition-colors marker:content-none">
+          {/* Rotate arrow when open using Tailwind group-open modifier */}
+          <Icon
+            name="lucide:chevron-right"
+            class="size-4 flex-shrink-0 transition-transform group-open/details:rotate-90"
+          />
+          <Icon
+            name="lucide:folder"
+            class="size-4 flex-shrink-0 group-open/details:hidden"
+          />
+          <Icon
+            name="lucide:folder-open"
+            class="size-4 flex-shrink-0 hidden group-open/details:block"
+          />
+          <span class="line-clamp-1 text-pretty capitalize">{item.name}</span>
+        </summary>
+        <ul class="ml-4 mt-1 border-l border-border pl-2 space-y-1">
+          {item.children.map((child) => (
+            <Astro.self item={child} currentId={currentId} />
+          ))}
+        </ul>
+      </details>
+    </li>
+  ) : (
+    <li>
+      {isActiveFile ? (
+        <div class="bg-muted text-foreground flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-pretty">
+          <Icon
+            name="lucide:file-text"
+            class="size-4 flex-shrink-0"
+            aria-hidden="true"
+          />
+          <span class="line-clamp-2 text-pretty">
+            {item.data?.data.title}
+          </span>
+        </div>
+      ) : (
+        <Link
+          href={`/wiki/${item.data?.id}`}
+          class="hover:text-foreground text-muted-foreground hover:bg-muted/50 flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-pretty transition-colors"
+        >
+          <Icon
+            name="lucide:file"
+            class="size-4 flex-shrink-0"
+            aria-hidden="true"
+          />
+          <span class="line-clamp-2 text-pretty">
+            {item.data?.data.title}
+          </span>
+        </Link>
+      )}
+    </li>
+  )
+}
