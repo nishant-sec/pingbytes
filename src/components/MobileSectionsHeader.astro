@@ -1,0 +1,198 @@
+---
+import { ScrollArea } from '@/components/ui/scroll-area'
+import type { WikiNode } from '@/lib/data-utils'
+import { Icon } from 'astro-icon/components'
+import { cn } from '@/lib/utils'
+
+interface Props {
+  tree: WikiNode[]
+  currentPostId: string
+  title?: string
+}
+
+const { tree, currentPostId, title = 'Sections' } = Astro.props
+
+type FlatNode = { node: WikiNode; depth: number }
+const flat: FlatNode[] = []
+
+const flatten = (nodes: WikiNode[], depth = 0) => {
+  for (const node of nodes) {
+    flat.push({ node, depth })
+    if (node.children?.length) flatten(node.children, depth + 1)
+  }
+}
+
+flatten(tree)
+---
+
+{flat.length > 0 && (
+  <div
+    id="mobile-sections-container"
+    class="w-full xl:hidden sticky top-0 z-50 bg-background/90 backdrop-blur"
+  >
+    <details class="group">
+      <summary class="flex w-full cursor-pointer items-center justify-between">
+        <div class="mx-auto flex w-full max-w-3xl items-center px-4 py-3">
+          <div class="relative mr-2 size-4">
+            <svg class="h-4 w-4" viewBox="0 0 24 24">
+              <circle
+                class="text-primary/20"
+                cx="12"
+                cy="12"
+                r="10"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <circle
+                id="mobile-sections-progress-circle"
+                class="text-primary"
+                cx="12"
+                cy="12"
+                r="10"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-dasharray="62.83"
+                stroke-dashoffset="62.83"
+                transform="rotate(-90 12 12)"
+              />
+            </svg>
+          </div>
+          <span
+            id="mobile-sections-current"
+            class="text-muted-foreground flex-grow truncate text-sm"
+          >
+            {flat.find((n) => n.node.id === currentPostId)?.node.title || title}
+          </span>
+          <span class="text-muted-foreground ml-2">
+            <Icon
+              name="lucide:chevron-down"
+              class="h-4 w-4 transition-transform duration-200 group-open:rotate-180"
+            />
+          </span>
+        </div>
+      </summary>
+
+      <ScrollArea
+        client:visible
+        className="mx-auto max-w-3xl"
+        data-sections-scroll
+      >
+        <div class="max-h-[30vh]">
+          <ul
+            class="flex list-none flex-col gap-y-2 px-4 pb-4"
+            id="mobile-sections-list"
+          >
+            {flat.map(({ node, depth }) => {
+              const isCurrent = node.id === currentPostId
+              const indent = Math.min(depth, 6) * 12
+              return (
+                <li
+                  class={cn(
+                    'px-4 text-sm',
+                    isCurrent ? 'text-foreground' : 'text-foreground/60',
+                  )}
+                  style={`padding-left: ${indent}px`}
+                >
+                  <a
+                    href={`/wiki/${node.id}`}
+                    class="mobile-sections-item underline decoration-transparent underline-offset-[3px] transition-colors duration-200 hover:decoration-inherit flex items-center gap-2"
+                    data-section-id={node.id}
+                  >
+                    <span class="break-all hyphens-auto leading-snug">
+                      {node.title}
+                    </span>
+                  </a>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      </ScrollArea>
+    </details>
+  </div>
+)}
+
+<script>
+  const INITIAL_SECTIONS_TEXT = 'Sections'
+  const HEADER_OFFSET = 102 + 36
+  const PROGRESS_CIRCLE_RADIUS = 10
+  const PROGRESS_CIRCLE_CIRCUMFERENCE = 2 * Math.PI * PROGRESS_CIRCLE_RADIUS
+
+  class SectionsState {
+    progressCircle: HTMLElement | null = null
+    currentText: HTMLElement | null = null
+    details: HTMLDetailsElement | null = null
+    list: HTMLElement | null = null
+    scrollArea: HTMLElement | null = null
+    links: NodeListOf<Element> = document.querySelectorAll(
+      '[data-section-id]',
+    )
+  }
+
+  const state = new SectionsState()
+
+  function reset() {
+    state.progressCircle = document.getElementById(
+      'mobile-sections-progress-circle',
+    )
+    state.currentText = document.getElementById('mobile-sections-current')
+    state.details = document.querySelector(
+      '#mobile-sections-container details',
+    )
+    state.list = document.getElementById('mobile-sections-list')
+    const container = document.getElementById('mobile-sections-container')
+    state.scrollArea =
+      container?.querySelector('[data-radix-scroll-area-viewport]') || null
+    state.links = document.querySelectorAll(
+      '#mobile-sections-container [data-section-id]',
+    )
+
+    if (state.progressCircle) {
+      state.progressCircle.style.strokeDasharray =
+        PROGRESS_CIRCLE_CIRCUMFERENCE.toString()
+      state.progressCircle.style.strokeDashoffset =
+        PROGRESS_CIRCLE_CIRCUMFERENCE.toString()
+    }
+  }
+
+  function updateProgress() {
+    if (!state.progressCircle) return
+    const scrollableDistance =
+      document.documentElement.scrollHeight - window.innerHeight
+    const scrollProgress =
+      scrollableDistance > 0
+        ? Math.min(Math.max(window.scrollY / scrollableDistance, 0), 1)
+        : 0
+    state.progressCircle.style.strokeDashoffset = (
+      PROGRESS_CIRCLE_CIRCUMFERENCE *
+      (1 - scrollProgress)
+    ).toString()
+  }
+
+  function setupInteractions() {
+    state.links.forEach((link) => {
+      link.addEventListener('click', () => {
+        state.details?.removeAttribute('open')
+      })
+    })
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    reset()
+    setupInteractions()
+    updateProgress()
+    window.addEventListener('scroll', updateProgress, { passive: true })
+  })
+
+  document.addEventListener('astro:after-swap', () => {
+    reset()
+    setupInteractions()
+    updateProgress()
+  })
+
+  document.addEventListener('astro:before-swap', () => {
+    window.removeEventListener('scroll', updateProgress)
+  })
+</script>
