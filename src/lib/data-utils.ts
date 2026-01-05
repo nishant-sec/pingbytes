@@ -328,9 +328,18 @@ export type WikiNode = {
   hasActiveChild?: boolean
 }
 
+function findNode(nodes: WikiNode[], id: string): WikiNode | null {
+  for (const node of nodes) {
+    if (node.id === id) return node
+    const child = findNode(node.children, id)
+    if (child) return child
+  }
+  return null
+}
+
 export async function getWikiTree(rootPath: string = ''): Promise<WikiNode[]> {
   const allPosts = await getAllWikiPosts() 
-  
+ 
   // Filter posts that belong to the requested root folder
   const relevantPosts = rootPath 
     ? allPosts.filter(post => post.id.startsWith(rootPath + '/'))
@@ -413,4 +422,13 @@ export function setActiveFlags(nodes: WikiNode[], currentId: string): boolean {
     }
   }
   return hasActive
+}
+
+export function getWikiNodeById(nodes: WikiNode[], id: string): WikiNode | null {
+  return findNode(nodes, id)
+}
+
+export function getWikiChildren(nodes: WikiNode[], id: string): WikiNode[] {
+  const node = getWikiNodeById(nodes, id)
+  return node?.children ?? []
 }

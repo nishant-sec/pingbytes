@@ -21,8 +21,9 @@ const nodeId = `folder-${node.id.replace(/\//g, '__')}`
   {hasChildren ? (
     <details 
       id={nodeId} 
-      open={node.hasActiveChild} 
       class="group js-wiki-folder"
+      data-active={node.hasActiveChild ? 'true' : 'false'}
+      open={node.hasActiveChild}
     >
       <summary 
         class={cn(

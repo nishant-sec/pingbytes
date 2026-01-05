@@ -4,8 +4,30 @@ import PageHead from '@/components/PageHead.astro'
 import Layout from '@/layouts/Layout.astro'
 import Link from '@/components/Link.astro'
 import { Icon } from 'astro-icon/components'
+import { getAllWikiPosts, getWikiTree } from '@/lib/data-utils'
 
 const pageUrl = new URL(Astro.url.pathname, Astro.site).href
+
+const posts = await getAllWikiPosts()
+const wikiTree = await getWikiTree()
+
+const topLevelFolders = wikiTree
+  .filter((node) => node.isFolder || node.children.length > 0)
+  .map((node) => {
+    const indexPost =
+      posts.find((p) => p.id === `${node.id}/index`) ||
+      posts.find((p) => p.id === node.id)
+
+    return {
+      id: node.id,
+      title: indexPost?.data.title || node.title,
+      description:
+        indexPost?.data.description ||
+        'Browse the resources inside this folder.',
+      href: `/wiki/${indexPost ? indexPost.id : node.id}`,
+      count: node.children.length,
+    }
+  })
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -15,21 +37,12 @@ const structuredData = {
   "url": pageUrl,
   "mainEntity": {
     "@type": "ItemList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Subnet Calculator",
-        "url": new URL("/wiki/subnet-calculator", Astro.site).href
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Password Generator",
-        "url": new URL("/wiki/password-generator", Astro.site).href
-      }
-      // Add more items here as you migrate them
-    ]
+    "itemListElement": topLevelFolders.map((folder, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "name": folder.title,
+      "url": new URL(folder.href, Astro.site).href
+    }))
   }
 }
 ---
@@ -53,40 +66,28 @@ const structuredData = {
       </p>
     </header>
 
-    <div class="space-y-1">
-      
-      <Link
-        href="/wiki/subnet-calculator"
-        class="group flex items-center gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors"
-      >
-        <Icon name="lucide:network" class="size-5 text-primary shrink-0" />
-        <div class="flex-1 min-w-0">
-          <h2 class="font-semibold group-hover:text-primary transition-colors">
-            Subnet Calculator
-          </h2>
-          <p class="text-sm text-muted-foreground">
-            Calculate subnet masks and network addresses
-          </p>
-        </div>
-        <Icon name="lucide:chevron-right" class="size-4 text-muted-foreground group-hover:text-primary shrink-0" />
-      </Link>
-
-      <Link
-        href="/wiki/password-generator"
-        class="group flex items-center gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors"
-      >
-        <Icon name="lucide:shield-check" class="size-5 text-primary shrink-0" />
-        <div class="flex-1 min-w-0">
-          <h2 class="font-semibold group-hover:text-primary transition-colors">
-            Password Generator
-          </h2>
-          <p class="text-sm text-muted-foreground">
-            Generate secure passwords and check strength
-          </p>
-        </div>
-        <Icon name="lucide:chevron-right" class="size-4 text-muted-foreground group-hover:text-primary shrink-0" />
-      </Link>
-
-      </div>
+    <div class="space-y-2">
+      {topLevelFolders.map((folder) => (
+        <Link
+          href={folder.href}
+          class="group flex items-center gap-4 rounded-lg p-4 transition-colors hover:bg-muted/50"
+        >
+          <Icon name="lucide:folder" class="size-5 text-primary shrink-0" />
+          <div class="flex-1 min-w-0">
+            <h2 class="font-semibold group-hover:text-primary transition-colors">
+              {folder.title}
+            </h2>
+            <p class="text-sm text-muted-foreground line-clamp-2">
+              {folder.description}
+            </p>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-muted-foreground">
+            <Icon name="lucide:files" class="size-4" />
+            <span>{folder.count} item{folder.count === 1 ? '' : 's'}</span>
+            <Icon name="lucide:chevron-right" class="size-4 text-muted-foreground group-hover:text-primary shrink-0" />
+          </div>
+        </Link>
+      ))}
+    </div>
   </article>
 </Layout>

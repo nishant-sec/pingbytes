@@ -1,0 +1,63 @@
+---
+import { Icon } from 'astro-icon/components'
+import { cn } from '@/lib/utils'
+import type { WikiNode } from '@/lib/data-utils'
+
+interface Props {
+  items: WikiNode[]
+  title?: string
+  currentPostId: string
+}
+
+const { items, title = 'In this folder', currentPostId } = Astro.props
+---
+
+{items.length > 0 && (
+  <section class="rounded-lg border bg-card px-4 py-3 sm:px-6 sm:py-4">
+    <div class="mb-3 flex items-center gap-2">
+      <Icon name="lucide:folder-tree" class="size-4 text-primary" />
+      <h2 class="text-base font-semibold">{title}</h2>
+    </div>
+
+    <ul class="divide-y divide-border/60">
+      {items.map((child) => {
+        const isActive = child.id === currentPostId
+        const isFolder = child.isFolder || child.children.length > 0
+        const childCount = child.children.length
+
+        return (
+          <li>
+            <a
+              href={`/wiki/${child.id}`}
+              class={cn(
+                'flex items-start gap-3 py-3 transition-colors',
+                isActive
+                  ? 'text-primary'
+                  : 'text-foreground/80 hover:text-foreground'
+              )}
+            >
+              <Icon
+                name={isFolder ? 'lucide:folder' : 'lucide:file-text'}
+                class="mt-0.5 size-4 text-muted-foreground"
+              />
+              <div class="flex-1 space-y-0.5">
+                <p class="text-sm font-medium leading-snug">{child.title}</p>
+                <p class="text-xs text-muted-foreground">
+                  {isFolder
+                    ? childCount > 0
+                      ? `${childCount} item${childCount === 1 ? '' : 's'}`
+                      : 'Folder'
+                    : 'Open page'}
+                </p>
+              </div>
+              <Icon
+                name="lucide:arrow-up-right"
+                class="mt-0.5 size-3.5 text-muted-foreground"
+              />
+            </a>
+          </li>
+        )
+      })}
+    </ul>
+  </section>
+)}
