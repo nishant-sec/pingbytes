@@ -32,7 +32,7 @@ const nodeId = `folder-${node.id.replace(/\//g, '__')}`
         )}
       >
         <div class="flex items-start gap-2 text-left">
-           <span class="break-words whitespace-normal leading-snug">{node.title}</span>
+           <span class="break-all hyphens-auto whitespace-normal leading-snug">{node.title}</span>
         </div>
         <Icon 
           name="lucide:chevron-right" 
@@ -58,7 +58,7 @@ const nodeId = `folder-${node.id.replace(/\//g, '__')}`
           : "text-foreground/70 hover:bg-muted/50 hover:text-foreground"
       )}
     >
-      <span class="break-words whitespace-normal leading-snug">{node.title}</span>
+      <span class="break-all hyphens-auto whitespace-normal leading-snug">{node.title}</span>
     </a>
   )}
 </li>

@@ -1,5 +1,5 @@
 ---
-title: "Subnetting Guide"
+title: "Subnettinggggggggggggggggggggggggggggggggggggg"
 description: "CIDR math with examples to build muscle memory."
 date: 2025-01-04
 tags: ["networking", "subnetting"]
@@ -20,7 +20,22 @@ draft: false
   - `192.168.10.128/26` (hosts .129–.190)
   - `192.168.10.192/26` (hosts .193–.254)
 
-## Quick math steps
+## Qllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+1. Determine block size: `256 - last_octet_of_mask` (for IPv4).
+2. Walk the block size to enumerate ranges.
+3. Keep network and broadcast reserved; others are usable.
+1. Determine block size: `256 - last_octet_of_mask` (for IPv4).
+2. Walk the block size to enumerate ranges.
+3. Keep network and broadcast reserved; others are usable.
+1. Determine block size: `256 - last_octet_of_mask` (for IPv4).
+2. Walk the block size to enumerate ranges.
+3. Keep network and broadcast reserved; others are usable.
+1. Determine block size: `256 - last_octet_of_mask` (for IPv4).
+2. Walk the block size to enumerate ranges.
+3. Keep network and broadcast reserved; others are usable.
+1. Determine block size: `256 - last_octet_of_mask` (for IPv4).
+2. Walk the block size to enumerate ranges.
+3. Keep network and broadcast reserved; others are usable.
 1. Determine block size: `256 - last_octet_of_mask` (for IPv4).
 2. Walk the block size to enumerate ranges.
 3. Keep network and broadcast reserved; others are usable.
