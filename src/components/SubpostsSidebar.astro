@@ -1,6 +1,7 @@
 ---
 import Link from '@/components/Link.astro'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { cn } from '@/lib/utils'
 import {
   getCombinedReadingTime,
   getParentId,
@@ -12,7 +13,7 @@ import {
 } from '@/lib/data-utils'
 import { Icon } from 'astro-icon/components'
 
-const { parentId } = Astro.props
+const { parentId, className } = Astro.props
 const currentPostId = Astro.params.id as string
 const isCurrentSubpost = isSubpost(currentPostId)
 const rootParentId = isCurrentSubpost ? getParentId(currentPostId) : parentId
@@ -41,7 +42,10 @@ const subpostsWithReadingTime = await Promise.all(
 
 <div
   id="subposts-sidebar-container"
-  class="sticky top-20 col-start-3 row-span-1 mr-auto ml-8 hidden h-[calc(100vh-5rem)] max-w-md xl:block"
+  class={cn(
+    'sticky top-20 mr-auto ml-8 hidden h-[calc(100vh-5rem)] max-w-md xl:block',
+    className,
+  )}
 >
   <ScrollArea
     client:visible

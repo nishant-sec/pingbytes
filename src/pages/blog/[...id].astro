@@ -66,7 +66,11 @@ try {
 const isCurrentSubpost = isSubpost(currentPostId)
 
 // Error handling for navigation and metadata
-let navigation: Awaited<ReturnType<typeof getAdjacentPosts>> = { newer: null, older: null, parent: null }
+let navigation: Awaited<ReturnType<typeof getAdjacentPosts>> = {
+  newer: null,
+  older: null,
+  parent: null,
+}
 let parentPost: Awaited<ReturnType<typeof getParentPost>> = null
 let hasChildPosts = false
 let subpostCount = 0
@@ -153,8 +157,33 @@ try {
       )
     }
 
-    <section class="col-start-2 flex flex-col gap-y-6 text-center">
-      <div class="flex flex-col">
+    <div class="col-start-1 row-start-3 hidden xl:block">
+      {
+        (hasChildPosts || isCurrentSubpost) && (
+          <SubpostsSidebar
+            parentId={
+              isCurrentSubpost ? getParentId(currentPostId) : currentPostId
+            }
+            className="mr-8 ml-auto w-full max-w-md"
+          />
+        )
+      }
+    </div>
+
+    {
+      tocSections.length > 0 && (
+        <div class="col-start-3 row-start-3 hidden xl:block">
+          <TOCSidebar
+            sections={tocSections}
+            currentPostId={currentPostId}
+            className="ml-8 w-full max-w-md"
+          />
+        </div>
+      )
+    }
+
+    <div class="col-start-2 row-start-3 flex flex-col gap-y-8 text-left">
+      <div class="flex flex-col gap-4">
         <h1
           class="mb-2 scroll-mt-31 text-3xl leading-tight font-medium sm:text-4xl"
           id="post-title"
@@ -163,11 +192,11 @@ try {
         </h1>
 
         <div
-          class="text-muted-foreground divide-border mb-4 flex flex-col items-center justify-center divide-y text-xs sm:flex-row sm:flex-wrap sm:divide-x sm:divide-y-0 sm:text-sm"
+          class="text-muted-foreground divide-border flex flex-col items-start justify-start divide-y text-xs sm:flex-row sm:flex-wrap sm:divide-x sm:divide-y-0 sm:text-sm"
         >
           {
             authors.length > 0 && (
-              <div class="flex w-full items-center justify-center gap-x-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
+              <div class="flex w-full items-center gap-x-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
                 {authors.map((author) => (
                   <div class="flex items-center gap-x-1.5">
                     <Image
@@ -195,13 +224,13 @@ try {
           }
 
           <div
-            class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0"
+            class="flex w-full items-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0"
           >
             <span>{formatDate(post.data.date)}</span>
           </div>
 
           <div
-            class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0"
+            class="flex w-full items-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0"
           >
             <span>
               {postReadingTime}
@@ -219,14 +248,15 @@ try {
 
           {
             subpostCount > 0 && (
-              <div class="flex w-full items-center justify-center gap-1 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
+              <div class="flex w-full items-center gap-1 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
                 <Icon name="lucide:file-text" class="size-3" />
                 {subpostCount} subpost{subpostCount === 1 ? '' : 's'}
               </div>
             )
           }
         </div>
-        <div class="flex flex-wrap justify-center gap-2">
+
+        <div class="flex flex-wrap gap-2">
           {
             post.data.tags &&
               post.data.tags.length > 0 &&
@@ -259,47 +289,30 @@ try {
         olderPost={navigation.older}
         parentPost={isCurrentSubpost ? navigation.parent : undefined}
       />
-    </section>
 
-    {
-      tocSections.length > 0 && (
-        <TOCSidebar sections={tocSections} currentPostId={currentPostId} />
-      )
-    }
+      <article class="prose max-w-none">
+        <Content />
+      </article>
 
-    <article class="prose col-start-2 max-w-none">
-      <Content />
-    </article>
+      <PostNavigation
+        newerPost={navigation.newer}
+        olderPost={navigation.older}
+        parentPost={isCurrentSubpost ? navigation.parent : undefined}
+      />
 
-    {
-      (hasChildPosts || isCurrentSubpost) && (
-        <SubpostsSidebar
-          parentId={
-            isCurrentSubpost ? getParentId(currentPostId) : currentPostId
-          }
-          className="w-64"
-        />
-      )
-    }
-
-    <PostNavigation
-      newerPost={navigation.newer}
-      olderPost={navigation.older}
-      parentPost={isCurrentSubpost ? navigation.parent : undefined}
-    />
-
-    {
-      /* Only show Disqus on main posts, not subposts */
-      !isCurrentSubpost && (
-        <div class="col-start-2 mt-12">
-          <Disqus
-            identifier={`blog-${currentPostId}`}
-            title={post.data.title}
-            url={new URL(`/blog/${currentPostId}`, SITE.href).href}
-          />
-        </div>
-      )
-    }
+      {
+        /* Only show Disqus on main posts, not subposts */
+        !isCurrentSubpost && (
+          <div class="mt-4">
+            <Disqus
+              identifier={`blog-${currentPostId}`}
+              title={post.data.title}
+              url={new URL(`/blog/${currentPostId}`, SITE.href).href}
+            />
+          </div>
+        )
+      }
+    </div>
   </section>
 
 

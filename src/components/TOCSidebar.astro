@@ -7,9 +7,10 @@ import { cn, getHeadingMargin } from '@/lib/utils'
 type Props = {
   sections: TOCSection[]
   currentPostId: string
+  className?: string
 }
 
-const { sections, currentPostId } = Astro.props
+const { sections, currentPostId, className } = Astro.props
 const isCurrentSubpost = isSubpost(currentPostId)
 const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
 ---
@@ -18,7 +19,10 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
   sections.length > 0 && (
     <div
       id="toc-sidebar-container"
-      class="sticky top-20 col-start-3 row-span-1 ml-8 hidden h-[calc(100vh-6rem)] max-w-md xl:block"
+      class={cn(
+        'sticky top-20 hidden h-[calc(100vh-6rem)] max-w-md xl:ml-8 xl:block',
+        className,
+      )}
     >
       <ScrollArea
         client:visible
