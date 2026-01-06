@@ -1,19 +1,6 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content'
 import { readingTime, calculateWordCountFromHtml } from '@/lib/utils'
 
-export async function getAllWikiPosts() {
-  const posts = await getCollection('wiki')
-  return posts
-    .filter((post) => {
-      return import.meta.env.PROD ? post.data.draft !== true : true
-    })
-    .sort((a, b) => {
-      const orderA = a.data.order ?? 999
-      const orderB = b.data.order ?? 999
-      return orderA - orderB
-    })
-}
-
 export async function getAllAuthors(): Promise<CollectionEntry<'authors'>[]> {
   return await getCollection('authors')
 }
@@ -131,6 +118,61 @@ export async function getRecentPosts(
 ): Promise<CollectionEntry<'blog'>[]> {
   const posts = await getAllPosts()
   return posts.slice(0, count)
+}
+
+export async function getRelatedPosts(
+  currentPostId: string,
+  limit: number = 3,
+): Promise<CollectionEntry<'blog'>[]> {
+  const allPosts = await getAllPosts()
+  const currentPost = allPosts.find((post) => post.id === currentPostId)
+
+  if (!currentPost || !currentPost.data.tags || currentPost.data.tags.length === 0) {
+    // If no tags, return recent posts excluding current
+    return allPosts.filter((post) => post.id !== currentPostId).slice(0, limit)
+  }
+
+  // Score posts based on tag overlap
+  const scoredPosts = allPosts
+    .filter((post) => post.id !== currentPostId)
+    .map((post) => {
+      const currentTags = new Set(currentPost.data.tags || [])
+      const postTags = new Set(post.data.tags || [])
+      
+      // Count matching tags
+      let score = 0
+      postTags.forEach((tag) => {
+        if (currentTags.has(tag)) {
+          score += 1
+        }
+      })
+
+      return { post, score }
+    })
+    .filter((item) => item.score > 0) // Only include posts with at least one matching tag
+    .sort((a, b) => {
+      // Sort by score (descending), then by date (descending)
+      if (b.score !== a.score) {
+        return b.score - a.score
+      }
+      return b.post.data.date.valueOf() - a.post.data.date.valueOf()
+    })
+    .slice(0, limit)
+    .map((item) => item.post)
+
+  // If we don't have enough related posts, fill with recent posts
+  if (scoredPosts.length < limit) {
+    const recentPosts = allPosts
+      .filter(
+        (post) =>
+          post.id !== currentPostId &&
+          !scoredPosts.some((related) => related.id === post.id),
+      )
+      .slice(0, limit - scoredPosts.length)
+    return [...scoredPosts, ...recentPosts]
+  }
+
+  return scoredPosts
 }
 
 export async function getSortedTags(): Promise<
@@ -316,7 +358,20 @@ export async function getTOCSections(postId: string): Promise<TOCSection[]> {
   return sections
 }
 
-/* === WIKI TREE LOGIC === */
+/* === WIKI DATA HELPERS === */
+
+export async function getAllWikiPosts() {
+  const posts = await getCollection('wiki')
+  return posts
+    .filter((post) => {
+      return import.meta.env.PROD ? post.data.draft !== true : true
+    })
+    .sort((a, b) => {
+      const orderA = a.data.order ?? 999
+      const orderB = b.data.order ?? 999
+      return orderA - orderB
+    })
+}
 
 export type WikiNode = {
   id: string
@@ -338,11 +393,11 @@ function findNode(nodes: WikiNode[], id: string): WikiNode | null {
 }
 
 export async function getWikiTree(rootPath: string = ''): Promise<WikiNode[]> {
-  const allPosts = await getAllWikiPosts() 
- 
+  const allPosts = await getAllWikiPosts()
+
   // Filter posts that belong to the requested root folder
-  const relevantPosts = rootPath 
-    ? allPosts.filter(post => post.id.startsWith(rootPath + '/'))
+  const relevantPosts = rootPath
+    ? allPosts.filter((post) => post.id.startsWith(rootPath + '/'))
     : allPosts
 
   const tree: WikiNode[] = []
@@ -352,33 +407,34 @@ export async function getWikiTree(rootPath: string = ''): Promise<WikiNode[]> {
     // Remove the rootPath prefix for relative tree construction
     const relativeId = rootPath ? post.id.slice(rootPath.length + 1) : post.id
     const parts = relativeId.split('/')
-    
+
     let currentPath = ''
 
     parts.forEach((part, index) => {
       const isLast = index === parts.length - 1
-      
+
       // Reconstruct full ID for linking
-      const fullId = rootPath ? `${rootPath}/${currentPath ? currentPath + '/' : ''}${part}` : `${currentPath ? currentPath + '/' : ''}${part}`
-      
+      const fullId = rootPath
+        ? `${rootPath}/${currentPath ? currentPath + '/' : ''}${part}`
+        : `${currentPath ? currentPath + '/' : ''}${part}`
+
       currentPath = currentPath ? `${currentPath}/${part}` : part
       const mapKey = currentPath
 
       if (!map.has(mapKey)) {
-        // Create new node
         const node: WikiNode = {
           id: fullId,
-          slug: fullId, 
-          // Format title: use post title if it's the file, otherwise capitalize folder name
-          title: isLast ? post.data.title : part.charAt(0).toUpperCase() + part.slice(1).replace(/-/g, ' '),
+          slug: fullId,
+          title: isLast
+            ? post.data.title
+            : part.charAt(0).toUpperCase() + part.slice(1).replace(/-/g, ' '),
           children: [],
-          order: isLast ? (post.data.order ?? 999) : 999,
+          order: isLast ? post.data.order ?? 999 : 999,
           isFolder: !isLast,
         }
-        
+
         map.set(mapKey, node)
 
-        // Attach to parent
         const parentPath = parts.slice(0, index).join('/')
         if (parentPath) {
           const parent = map.get(parentPath)
@@ -390,7 +446,6 @@ export async function getWikiTree(rootPath: string = ''): Promise<WikiNode[]> {
           tree.push(node)
         }
       } else if (isLast) {
-        // Update existing folder placeholder with actual file data (if index.md exists for a folder)
         const node = map.get(mapKey)!
         node.title = post.data.title
         node.order = post.data.order ?? 999
@@ -398,20 +453,22 @@ export async function getWikiTree(rootPath: string = ''): Promise<WikiNode[]> {
     })
   })
 
-  // Recursive Sort: Order by 'order' prop, then alphabetical
   const sortNodes = (nodes: WikiNode[]) => {
     nodes.sort((a, b) => {
       if (a.order !== b.order) return a.order - b.order
       return a.title.localeCompare(b.title)
     })
-    nodes.forEach(node => sortNodes(node.children))
+    nodes.forEach((node) => sortNodes(node.children))
   }
 
   sortNodes(tree)
   return tree
 }
 
-export function setActiveFlags(nodes: WikiNode[], currentId: string): boolean {
+export function setActiveFlags(
+  nodes: WikiNode[],
+  currentId: string,
+): boolean {
   let hasActive = false
   for (const node of nodes) {
     const isActive = node.id === currentId

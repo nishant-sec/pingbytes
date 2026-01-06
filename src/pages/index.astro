@@ -8,301 +8,300 @@ import { buttonVariants } from '@/components/ui/button'
 import Layout from '@/layouts/Layout.astro'
 import { Icon } from 'astro-icon/components'
 import { getRecentPosts } from '@/lib/data-utils'
-import { cn } from '@/lib/utils'
 import { SOCIAL_LINKS, ICON_MAP, SITE } from '@/consts'
 import type { SocialLink } from '@/types'
 
-// Error handling for fetching recent posts
 let latestPosts: Awaited<ReturnType<typeof getRecentPosts>> = []
 try {
-  latestPosts = await getRecentPosts(2)
+  latestPosts = await getRecentPosts(3)
 } catch (error) {
   console.error('Error fetching recent posts:', error)
 }
 
-// Person Schema for homepage SEO
 const personSchema = {
   "@context": "https://schema.org",
   "@type": "Person",
-  "name": SITE.title,
+  "name": "Robert Melcher",
+  "alternateName": "merox",
   "url": SITE.href,
+  "image": new URL('/reworkedmeroxdc1.webp', Astro.site).href,
+  "jobTitle": "HPC System Administrator",
+  "worksFor": { "@type": "Organization", "name": "Forvia" },
+  "sameAs": ["https://github.com/meroxdotdev", "https://www.linkedin.com/in/robert-melcher-92a1a9157"],
   "description": SITE.description
 }
 
-// Organization Schema
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": SITE.title,
   "url": SITE.href,
-  "description": SITE.description
+  "logo": new URL('/reworkedmeroxdc1.webp', Astro.site).href,
+  "description": SITE.description,
+  "founder": { "@type": "Person", "name": "Robert Melcher" }
 }
 
-// Website Schema
 const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": SITE.title,
   "url": SITE.href,
   "description": SITE.description,
+  "author": { "@type": "Person", "name": "Robert Melcher" },
   "potentialAction": {
     "@type": "SearchAction",
-    "target": {
-      "@type": "EntryPoint",
-      "urlTemplate": `${SITE.href}/blog?q={search_term_string}`
-    },
+    "target": { "@type": "EntryPoint", "urlTemplate": `${SITE.href}/blog?q={search_term_string}` },
     "query-input": "required name=search_term_string"
   }
 }
 
-// Experience Timeline - Customize with your own experience
-type ExperienceItem = {
-  role: string
-  company: string
-  period: string
-  current?: boolean
-  icon: string
-  key: string
-}
-
-// Customize your experience here
-const experience: ExperienceItem[] = [
+const experience = [
   {
-    role: 'Your Current Role',
-    company: 'Current Company',
+    role: 'HPC System Administrator',
+    company: 'Forvia',
     period: '2022 - Present',
     current: true,
-    icon: 'lucide:briefcase',
-    key: 'Brief description of your current role and key achievements • Add more details about your responsibilities and accomplishments'
-  },
-  {
-    role: 'Previous Role',
-    company: 'Previous Company',
-    period: '2020 - 2022',
     icon: 'lucide:server',
-    key: 'Description of your previous role and achievements • Highlight key projects or responsibilities you had in this position'
+    key: 'Led end-to-end deployment of HPC cluster on Dell infrastructure with PBS scheduling • Cross-team coordination with network and firewall teams for infrastructure provisioning'
   },
   {
-    role: 'Earlier Role',
-    company: 'Earlier Company',
-    period: '2018 - 2020',
-    icon: 'lucide:code',
-    key: 'Description of your earlier role and achievements • Show your career progression and growth over time'
+    role: 'Founder',
+    company: 'Dolphost',
+    period: '2022 - 2024',
+    icon: 'lucide:rocket',
+    key: 'Built secure WordPress hosting platform • Managed VPS infrastructure and implemented WHMCS/cPanel solutions'
   },
+  {
+    role: 'Cyber Security Engineer',
+    company: 'Atos IT Solutions',
+    period: '2020 - 2022',
+    icon: 'lucide:shield',
+    key: 'Conducted vulnerability assessments with NESSUS • Implemented firewall policies across Cisco, Fortinet, Palo Alto, and Juniper platforms'
+  },
+  {
+    role: 'System Administrator',
+    company: 'Netex Romania',
+    period: '2018 - 2020',
+    icon: 'lucide:server',
+    key: 'Migrated Puppet infrastructure to Kubernetes • Managed BAREOS backups for 200+ servers • Configured IPsec site-to-site VPN connections'
+  }
 ]
 ---
+
 <Layout class="max-w-3xl" transition:persist="home-layout">
-  <PageHead slot="head" title={SITE.title} fullTitle={true} />
-  
-  <!-- Schema Markup for SEO -->
+  <PageHead slot="head" title="Merox - Insights from my tech journey" fullTitle={true} />
+
   <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
   <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
   <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
   
-  <!-- Hero Section -->
-  <section class="relative overflow-hidden rounded-xl border" style="min-height: clamp(280px, 40vh, 400px);">
-    <!-- Gradient Background -->
-    <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background" aria-hidden="true"></div>
-    
-    <!-- Content -->
-    <div class="relative z-10 p-8 md:p-12">
-      <div class="flex flex-col gap-8">
-        <!-- Main Content -->
-        <div class="flex-1 min-w-0 space-y-6">
-          <!-- Heading -->
-          <div class="space-y-4" style="min-height: clamp(120px, 20vh, 180px);">
-            <h1 class="text-4xl sm:text-5xl md:text-6xl leading-[1.1] font-bold tracking-tight" style="font-variation-settings: 'wght' 700;">
-              Welcome to<br class="hidden sm:block" />
-              <span class="text-primary">{SITE.title}</span>
-            </h1>
-            <p class="text-muted-foreground mt-4 leading-relaxed text-base md:text-lg max-w-xl" style="min-height: 3rem;">
-              {SITE.description}
-            </p>
-          </div>
-          
-          <!-- CTA Buttons -->
-          <div class="flex flex-wrap items-center gap-3 pt-2">
-            <Link href="/blog" class={buttonVariants({ variant: 'default', size: 'lg' })}>
+  <link rel="preload" as="image" href="/meroxindc1.webp" type="image/webp" fetchpriority="high" media="(min-width: 768px)" />
+  
+  <style>
+    .hero-glow { animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: rgb(34, 197, 94);
+      animation: status-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes status-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); opacity: 1; }
+      50% { box-shadow: 0 0 0 4px rgba(34, 197, 94, 0); opacity: 0.8; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-glow, .status-dot { animation: none; }
+    }
+  </style>
+
+  <section class="hero-section relative pt-4 pb-8 md:pt-12 md:pb-20" transition:animate="none">
+    <div class="flex flex-col-reverse md:flex-row items-center gap-6 md:gap-8">
+      <div class="flex-1 space-y-6 text-center md:text-left">
+        <div class="space-y-4">
+          <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter uppercase leading-[0.9] text-balance">
+            Building<br />infrastructure<br /><span class="text-primary">that scales</span>.
+          </h1>
+          <p class="text-base md:text-lg text-muted-foreground leading-relaxed max-w-lg mx-auto md:mx-0">
+            System Administrator and former Cybersecurity Engineer with expertise in Linux-based technologies, networking, and security.
+          </p>
+        </div>
+
+        <div class="flex flex-col items-center md:items-start gap-6">
+          <div class="flex flex-wrap justify-center md:justify-start items-center gap-3">
+            <Link href="/blog" class={buttonVariants({ variant: 'default', size: 'lg', class: 'rounded-full px-6 h-12 text-sm font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5 active:scale-95' })}>
               Read the blog
-              <Icon name="lucide:arrow-right" class="size-4" />
+              <Icon name="lucide:arrow-right" class="ml-2 size-4" aria-hidden="true" />
             </Link>
-            <Link href="/about" class={buttonVariants({ variant: 'outline', size: 'lg' })}>
+            <Link href="/about" class={buttonVariants({ variant: 'outline', size: 'lg', class: 'rounded-full px-6 h-12 text-sm font-bold hover:bg-muted transition-all hover:-translate-y-0.5 active:scale-95' })}>
               About me
             </Link>
           </div>
           
-          <!-- Social Icons -->
-          <div class="pt-2">
-            <ul class="flex flex-wrap items-center gap-2" role="list">
+          <nav aria-label="Social links">
+            <ul class="flex items-center gap-1.5" role="list">
               {SOCIAL_LINKS.map(({ href, label }: SocialLink) => (
                 <li>
-                  <Link
-                    href={href}
-                    aria-label={label}
-                    title={label}
-                    class={buttonVariants({ variant: 'outline', size: 'icon' }) + ' backdrop-blur-sm bg-background/80'}
-                    external={href.startsWith('http') || href.startsWith('mailto:')}
-                  >
-                    <Icon
-                      name={
-                        ICON_MAP[label as keyof typeof ICON_MAP] ||
-                        'lucide:message-circle-question'
-                      }
-                      class="size-4"
-                    />
+                  <Link href={href} aria-label={label} title={label} class="group p-2.5 rounded-full hover:bg-primary/10 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" external={href.startsWith('http') || href.startsWith('mailto:')}>
+                    <Icon name={ICON_MAP[label as keyof typeof ICON_MAP] || 'lucide:message-circle-question'} class="size-5 text-muted-foreground group-hover:text-primary transition-colors" aria-hidden="true" />
+                    <span class="sr-only">{label}</span>
                   </Link>
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Experience Timeline -->
-  <section class="mt-8">
-    <div class="mb-6">
-      <h2 class="text-2xl font-semibold mb-2">Experience</h2>
-      <p class="text-sm text-muted-foreground">
-        Professional journey and achievements
-      </p>
-    </div>
-    
-    <div class="space-y-6">
-      {experience.map((exp, index) => (
-        <div class="relative">
-          {index < experience.length - 1 && (
-            <div class="absolute left-[11px] top-8 bottom-0 w-px bg-border" aria-hidden="true"></div>
-          )}
-          
-          <div class="flex gap-4">
-            <div class={`relative flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ring-4 ring-background z-10 ${
-              exp.current ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground"
-            }`}>
-              <Icon name={exp.icon} class="size-3.5" />
-            </div>
-            
-            <div class="flex-1 pb-2 min-w-0">
-              <div class="mb-1">
-                <h3 class="font-semibold text-lg leading-tight">{exp.role}</h3>
-                <p class="text-sm text-muted-foreground">
-                  {exp.company} · {exp.period}
-                </p>
-              </div>
-              <p class="text-sm text-muted-foreground/90 leading-relaxed mt-2">
-                {exp.key}
-              </p>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  </section>
-
-  <!-- Skills & Technologies (Optional) -->
-  <section class="mt-12">
-    <div class="mb-6">
-      <h2 class="text-2xl font-semibold mb-2">Skills & Technologies</h2>
-      <p class="text-sm text-muted-foreground">
-        Technologies and tools I work with
-      </p>
-    </div>
-    <ErrorBoundary client:load transition:persist="skills-error-boundary">
-      <Skills client:load transition:persist="skills-section" />
-    </ErrorBoundary>
-  </section>
-
-  <!-- Latest from the blog -->
-  {latestPosts && latestPosts.length > 0 && (
-    <section class="mt-12">
-      <div class="mb-6 flex items-center justify-between">
-        <div>
-          <h2 class="text-2xl font-semibold mb-2">Latest from the blog</h2>
-          <p class="text-sm text-muted-foreground">Recent insights and articles</p>
-        </div>
-        <Link 
-          href="/blog" 
-          class={buttonVariants({ variant: 'ghost' }) + ' hidden sm:flex items-center gap-1.5'}
-        >
-          View all
-          <Icon name="lucide:arrow-right" class="size-4" />
-        </Link>
       </div>
       
-      <div class="space-y-2">
-        {latestPosts.map((post) => (
-          <article>
-            <BlogCard entry={post} />
-          </article>
+      <div class="relative flex-shrink-0 w-full max-w-[160px] md:max-w-none md:w-[220px] lg:w-[250px]">
+        <div class="hero-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/5 rounded-full blur-[60px] md:blur-[80px] -z-10" aria-hidden="true"></div>
+        <picture>
+          <source srcset="/meroxindc1.webp" type="image/webp" />
+          <img src="/meroxindc1.webp" alt="Robert Melcher" width="320" height="400" loading="eager" decoding="async" class="w-full h-auto" />
+        </picture>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-8 pt-8 md:mt-16 md:pt-16 border-t border-border/50">
+    <div class="flex flex-col md:flex-row gap-6 md:gap-16">
+      <div class="md:w-1/4">
+        <h2 class="text-2xl font-black tracking-tighter uppercase leading-none text-foreground md:sticky md:top-24">
+          Career<br /><span class="text-primary">Journey</span>.
+        </h2>
+      </div>
+      <div class="flex-1 space-y-10">
+        {experience.map((exp) => (
+          <div class="group space-y-3">
+            <div class="space-y-1">
+              <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+                <h3 class="text-lg font-bold text-foreground">{exp.role}</h3>
+                <time class="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-widest tabular-nums">{exp.period}</time>
+              </div>
+              <div class="text-xs font-bold text-primary uppercase tracking-wider">{exp.company}</div>
+            </div>
+            <p class="text-sm text-muted-foreground leading-relaxed max-w-xl">{exp.key}</p>
+          </div>
         ))}
       </div>
-      
-      <article class="mt-2 sm:hidden">
-        <Link
-          href="/blog"
-          aria-label="View all blog posts"
-          class="group block py-3 px-2 rounded-md border border-border/50 bg-muted/20 hover:bg-muted/40 hover:border-primary/30 transition-all duration-200"
-        >
-          <div class="flex items-center gap-3">
-            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-center group-hover:bg-primary/20 dark:group-hover:bg-primary/30 transition-colors" aria-hidden="true">
-              <Icon name="lucide:library" class="size-5 text-primary" />
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2">
-                <span class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
-                  View all posts
-                </span>
-                <Icon name="lucide:arrow-right" class="size-4 text-primary/70 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" aria-hidden="true" />
-              </div>
-              <p class="text-xs text-muted-foreground mt-0.5">
-                Explore all articles and tutorials
-              </p>
+    </div>
+  </section>
+
+  <section class="mt-12 pt-12 md:mt-16 md:pt-16 border-t border-border/50">
+    <div class="flex flex-col md:flex-row gap-8 md:gap-16">
+      <div class="md:w-1/4">
+        <h2 class="text-2xl font-black tracking-tighter uppercase leading-none text-foreground md:sticky md:top-24">
+          Stack &<br /><span class="text-primary">Skills</span>.
+        </h2>
+      </div>
+      <div class="flex-1 overflow-hidden">
+        <ErrorBoundary client:load transition:persist="skills-error-boundary">
+          <Skills client:load transition:persist="skills-section" />
+        </ErrorBoundary>
+      </div>
+    </div>
+  </section>
+
+  {latestPosts && latestPosts.length > 0 && (
+    <section class="mt-16 pt-16 md:mt-24 md:pt-24 border-t border-border/50">
+      <div class="flex flex-col md:flex-row gap-8 md:gap-16">
+        <div class="md:w-1/4 space-y-6">
+          <div class="space-y-2 md:sticky md:top-24">
+            <h2 class="text-3xl font-black tracking-tighter uppercase leading-none text-foreground">
+              Latest<br /><span class="text-primary">Insights</span>.
+            </h2>
+            <p class="text-xs text-muted-foreground font-medium leading-relaxed">
+              Deep dives into systems, security, and automation.
+            </p>
+            <div class="pt-4 hidden md:block">
+              <Link href="/blog" class={buttonVariants({ variant: 'outline', size: 'sm', class: 'rounded-full px-5 text-[10px] font-bold w-fit' })}>
+                All posts <Icon name="lucide:arrow-right" class="ml-2 size-3" />
+              </Link>
             </div>
           </div>
-        </Link>
-      </article>
+        </div>
+        <div class="flex-1">
+          <div class="flex flex-col gap-2">
+            {latestPosts.map((post) => (
+              <article>
+                <BlogCard entry={post} />
+              </article>
+            ))}
+          </div>
+          <div class="pt-8 md:hidden">
+            <Link href="/blog" class="inline-flex items-center justify-center px-8 py-3 rounded-full bg-primary text-primary-foreground text-xs font-bold w-full shadow-lg shadow-primary/20">
+              View All Posts
+              <Icon name="lucide:arrow-right" class="ml-2 size-4" />
+            </Link>
+          </div>
+        </div>
+      </div>
     </section>
   )}
 
-  <!-- CTA Section -->
-  <section class="mt-12 sm:mt-24">
-    <div class="max-w-2xl mx-auto">
-      <div class="mb-12 relative">
-        <div class="absolute inset-0 flex items-center" aria-hidden="true">
-          <div class="w-full border-t border-border"></div>
-        </div>
-        <div class="relative flex justify-center">
-          <div class="flex items-center gap-2.5 px-4 py-2 rounded-full bg-background border border-border shadow-sm">
-            <span class="relative flex h-1.5 w-1.5">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary"></span>
-            </span>
-            <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Available</span>
-          </div>
-        </div>
+  <section class="mt-12 pt-12 md:mt-16 md:pt-16 border-t border-border/50 pb-12">
+    <div class="flex flex-col md:flex-row gap-12 md:gap-16">
+      <div class="md:w-1/4">
+        <h2 class="text-3xl font-black tracking-tighter uppercase leading-none text-foreground md:sticky md:top-24">
+          Built to<br /><span class="text-primary">Last</span>.
+        </h2>
       </div>
-      
-      <div class="text-center space-y-6">
-        <div class="space-y-2">
-          <h2 class="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight text-foreground leading-tight">
-            Let's connect
-          </h2>
+      <div class="flex-1 space-y-12">
+        <div class="grid grid-cols-1 gap-8">
+          {[
+            {
+              title: 'Linux Infrastructure',
+              icon: 'lucide:server',
+              desc: 'From bare metal to containers, I optimize and secure Linux systems at scale.',
+              features: ['System hardening & security audits', 'Performance tuning & optimization', 'Docker & Kubernetes deployment', 'Backup & disaster recovery']
+            },
+            {
+              title: 'Network Security',
+              icon: 'lucide:shield',
+              desc: 'Secure your network with proper firewall policies, VPNs, and vulnerability assessments.',
+              features: ['Firewall architecture & policies', 'Site-to-site VPN configuration', 'Vulnerability scanning & remediation', 'Network segmentation design']
+            },
+            {
+              title: 'Infrastructure Automation',
+              icon: 'lucide:workflow',
+              desc: 'Transform manual processes into reliable, repeatable Infrastructure as Code.',
+              features: ['Ansible & Terraform workflows', 'CI/CD pipeline implementation', 'Configuration management at scale', 'GitOps & Homelab as Code']
+            }
+          ].map((service) => (
+            <div class="group space-y-4">
+              <div class="flex items-center gap-3">
+                <div class="size-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary border border-primary/10">
+                  <Icon name={service.icon} class="size-5" />
+                </div>
+                <h3 class="text-lg font-black uppercase tracking-tight text-foreground">{service.title}</h3>
+              </div>
+              <div class="grid sm:grid-cols-[1fr_auto] gap-8 items-start">
+                <p class="text-sm text-muted-foreground leading-relaxed max-w-md">{service.desc}</p>
+                <ul class="grid grid-cols-1 gap-x-8 gap-y-2 sm:min-w-[240px]">
+                  {service.features.map(feature => (
+                    <li class="flex items-center gap-2 text-[10px] font-bold text-foreground/70 uppercase tracking-wide">
+                      <Icon name="lucide:check" class="size-3 text-primary" /> {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
         </div>
-        <p class="text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-xl mx-auto">
-          Have questions or want to collaborate? Feel free to reach out!
-        </p>
-        <div class="pt-4">
-          {SOCIAL_LINKS.find(link => link.label === 'Email') && (
-            <Link 
-              href={SOCIAL_LINKS.find(link => link.label === 'Email')!.href} 
-              class="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-lg bg-foreground text-background text-base font-medium hover:bg-foreground/90 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              <Icon name="lucide:mail" class="size-4" />
-              <span>Get in touch</span>
-              <Icon name="lucide:arrow-right" class="size-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          )}
+
+        <div class="pt-8 border-t border-border/20 flex flex-col sm:flex-row sm:items-center justify-between gap-8">
+          <div class="flex gap-10">
+            {[ { label: 'Experience', value: '9+ Years' }, { label: 'Managed', value: '400+ Nodes' }, { label: 'Certified', value: 'CCNA' } ].map(stat => (
+              <div class="space-y-1">
+                <div class="text-xl font-black tracking-tighter text-foreground">{stat.value}</div>
+                <div class="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+          <Link href="mailto:hello@merox.dev" class={buttonVariants({ variant: 'default', size: 'lg', class: 'rounded-full px-10 font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5 active:scale-95' })}>
+            Start a project <Icon name="lucide:arrow-right" class="ml-2 size-4" />
+          </Link>
         </div>
       </div>
     </div>

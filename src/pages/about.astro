@@ -6,44 +6,146 @@ import Layout from '@/layouts/Layout.astro'
 import { Icon } from 'astro-icon/components'
 import { SITE } from '@/consts'
 
-// Person Schema for About page
+// Enhanced Person Schema for About page
 const personSchema = {
   "@context": "https://schema.org",
   "@type": "Person",
-  "name": SITE.title,
+  "name": "Robert Melcher",
+  "alternateName": "merox",
   "url": SITE.href,
-  "description": SITE.description
+  "image": new URL('/robert.webp', Astro.site).href,
+  "jobTitle": "HPC System Administrator",
+  "worksFor": {
+    "@type": "Organization",
+    "name": "Forvia"
+  },
+  "alumniOf": {
+    "@type": "EducationalOrganization",
+    "name": "West University of Timișoara"
+  },
+  "hasCredential": {
+    "@type": "EducationalOccupationalCredential",
+    "credentialCategory": "Professional Certification",
+    "recognizedBy": {
+      "@type": "Organization",
+      "name": "Cisco"
+    },
+    "name": "CCNA"
+  },
+  "sameAs": [
+    "https://github.com/meroxdotdev",
+    "https://www.linkedin.com/in/robert-melcher-92a1a9157"
+  ],
+  "email": "hello@merox.dev",
+  "description": "System Administrator and former Cybersecurity Engineer with expertise in Linux-based technologies, networking, and security."
 }
 ---
+
 <Layout class="max-w-3xl">
-  <PageHead slot="head" title="About" />
+  <PageHead slot="head" title="About | Robert Melcher" />
   
   <!-- Person Schema for About page SEO -->
   <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
   
   <Breadcrumbs items={[{ label: 'About', icon: 'lucide:user' }]} />
 
-  <section class="flex flex-col gap-8">
-    <!-- Header -->
-    <div class="flex flex-col gap-4">
-      <div>
-        <h1 class="text-3xl md:text-4xl font-bold">About</h1>
-        <p class="text-sm text-muted-foreground font-mono mt-1">
-          Learn more about this blog
-        </p>
+  <section class="flex flex-col gap-12 pb-12">
+    <!-- Header/Hero Section -->
+    <div class="flex flex-col md:flex-row gap-8 items-start">
+      <div class="relative shrink-0">
+        <div class="size-32 md:size-40 rounded-2xl overflow-hidden border border-border shadow-sm">
+          <img
+            src="/robert.webp"
+            alt="Robert Melcher"
+            width="1492"
+            height="1864"
+            class="object-cover w-full h-full transition-transform duration-500 hover:scale-105"
+            loading="eager"
+          />
+        </div>
+      </div>
+      
+      <div class="flex-1 space-y-4">
+        <div class="space-y-3">
+          <div>
+            <h1 class="text-4xl font-bold tracking-tight text-foreground">Robert Melcher</h1>
+            <p class="text-primary font-mono text-sm flex items-center gap-1.5 mt-1">
+              <Icon name="lucide:terminal" class="size-4" />
+              <span>@merox</span>
+            </p>
+            <div class="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
+              <Icon name="lucide:map-pin" class="size-3.5" />
+              <span>Timișoara, Romania</span>
+              <span class="text-sm">🇷🇴</span>
+            </div>
+          </div>
+
+          <!-- Identity Concept -->
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2 text-[11px]">
+            <div class="flex items-center gap-1.5">
+              <span class="font-bold text-primary uppercase tracking-tighter">Me</span>
+              <span class="font-medium text-muted-foreground">Melcher</span>
+            </div>
+            <span class="text-muted-foreground/30">•</span>
+            <div class="flex items-center gap-1.5">
+              <span class="font-bold text-primary uppercase tracking-tighter">Ro</span>
+              <span class="font-medium text-muted-foreground">Robert</span>
+            </div>
+            <span class="text-muted-foreground/30">•</span>
+            <div class="flex items-center gap-1.5">
+              <span class="font-bold text-primary uppercase tracking-tighter">X</span>
+              <span class="font-medium text-muted-foreground font-mono">0x39 = 5/7</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="prose prose-sm dark:prose-invert max-w-none">
+          <p class="text-lg text-muted-foreground leading-relaxed">
+            I'm a seasoned <strong class="text-foreground">HPC System Administrator</strong> currently building large-scale infrastructure at <strong class="text-foreground">Forvia</strong>. With a background in cybersecurity engineering and deep roots in Linux systems, I bridge the gap between performance and security.
+          </p>
+          <p class="text-muted-foreground leading-relaxed">
+            I specialize in <strong class="text-foreground font-medium">HPC clusters</strong>, <strong class="text-foreground font-medium">Linux infrastructure</strong>, and <strong class="text-foreground font-medium">network security</strong>. My professional journey is driven by a simple philosophy: <strong class="text-foreground font-medium italic">Build things that scale, but keep them simple enough to understand.</strong>
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-3 pt-2">
+          <Link 
+            href="/robert-melcher-cv.pdf" 
+            external 
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-foreground text-background text-sm font-semibold hover:bg-foreground/90 transition-colors"
+          >
+            <Icon name="lucide:file-text" class="size-4" />
+            <span>Download CV</span>
+          </Link>
+          <Link 
+            href="https://github.com/meroxdotdev" 
+            external 
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-card text-foreground text-sm font-semibold hover:bg-muted transition-colors"
+          >
+            <Icon name="lucide:github" class="size-4" />
+            <span>GitHub</span>
+          </Link>
+        </div>
       </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="prose prose-sm dark:prose-invert max-w-none space-y-6">
-      <p class="text-muted-foreground leading-relaxed">
-        Welcome to <strong class="text-primary">{SITE.title}</strong>! 
-        This is a placeholder about page. Customize this content to tell your visitors about yourself, your blog, or your interests.
-      </p>
-
-      <p class="text-muted-foreground leading-relaxed">
-        You can edit this page by modifying <code class="text-sm bg-muted px-1.5 py-0.5 rounded">src/pages/about.astro</code>.
-      </p>
+    <!-- Homelab Section -->
+    <div class="space-y-4 pt-8 border-t border-border">
+      <h2 class="text-2xl font-black tracking-tighter uppercase leading-none text-foreground flex items-center gap-2">
+        <Icon name="lucide:home" class="size-5 text-primary" />
+        <span>Personal <span class="text-primary">Passion</span></span>
+      </h2>
+      <div class="prose prose-sm dark:prose-invert max-w-none">
+        <p class="text-muted-foreground leading-relaxed">
+          Beyond my professional roles, my <strong class="text-foreground">homelab</strong> is where I experiment with emerging technologies. It serves as a sandbox where "Infrastructure as Code" principles meet real-world experimentation, allowing me to refine automation and security strategies before they reach production.
+        </p>
+        <div class="pt-2">
+          <Link href="/blog/homelab-tour" class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
+            <span>Explore the Homelab Tour</span>
+            <Icon name="lucide:arrow-right" class="size-3.5" />
+          </Link>
+        </div>
+      </div>
     </div>
   </section>
 </Layout>

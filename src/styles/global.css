@@ -5,6 +5,7 @@
 @theme inline {
   --font-sans: Geist, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --font-mono: Geist Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --font-brand: 'Plus Jakarta Sans', var(--font-sans);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -40,19 +41,18 @@
   font-display: optional;
 }
 
-:root {
+/* Default Blue Palette */
+:root,
+[data-palette='blue'] {
   --background: hsl(0 0% 100%);
   --header-background: hsl(0 0% 89%);
   --foreground: hsl(0 0% 3.9%);
-  /* Layout heights */
-  --header-h: 56px;
-  --sections-h: 48px;
   --primary: hsl(214 95% 52%);
   --primary-foreground: hsl(0 0% 98%);
   --secondary: hsl(0 0% 80.1%);
   --secondary-foreground: hsl(0 0% 9%);
   --muted: hsl(0 0% 80.1%);
-  --muted-foreground: hsl(0 0% 40%); /* Improved contrast from 45.1% to 40% */
+  --muted-foreground: hsl(0 0% 40%);
   --accent: hsl(217 91% 96%);
   --accent-foreground: hsl(217 91% 20%);
   --additive: hsl(112 50% 36%);
@@ -63,7 +63,7 @@
   --ring: hsl(214 95% 52%);
 }
 
-[data-theme='dark'] {
+[data-theme='dark'][data-palette='blue'] {
   --background: hsl(0 0% 11.1%);
   --header-background: hsl(0 0% 2.2%);
   --foreground: hsl(0 0% 95%);
@@ -72,7 +72,274 @@
   --secondary: hsl(0 0% 18.9%);
   --secondary-foreground: hsl(0 0% 98%);
   --muted: hsl(0 0% 18.9%);
-  --muted-foreground: hsl(0 0% 70%); /* Improved contrast from 63.9% to 70% */
+  --muted-foreground: hsl(0 0% 70%);
+  --accent: hsl(217 91% 20%);
+  --accent-foreground: hsl(217 91% 85%);
+  --additive: hsl(112 50% 36%);
+  --additive-foreground: hsl(0 0% 9%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(0 0% 22.9%);
+  --ring: hsl(214 95% 62%);
+}
+
+/* Green Palette */
+[data-palette='green'] {
+  --background: hsl(0 0% 100%);
+  --header-background: hsl(120 20% 92%);
+  --foreground: hsl(120 10% 3.9%);
+  --primary: hsl(142 76% 36%);
+  --primary-foreground: hsl(0 0% 98%);
+  --secondary: hsl(120 10% 80.1%);
+  --secondary-foreground: hsl(120 10% 9%);
+  --muted: hsl(120 10% 80.1%);
+  --muted-foreground: hsl(120 10% 40%);
+  --accent: hsl(142 76% 96%);
+  --accent-foreground: hsl(142 76% 20%);
+  --additive: hsl(112 50% 36%);
+  --additive-foreground: hsl(0 0% 9%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(120 10% 89.8%);
+  --ring: hsl(142 76% 36%);
+}
+
+[data-theme='dark'][data-palette='green'] {
+  --background: hsl(120 10% 11.1%);
+  --header-background: hsl(120 10% 2.2%);
+  --foreground: hsl(120 10% 95%);
+  --primary: hsl(142 76% 46%);
+  --primary-foreground: hsl(0 0% 9%);
+  --secondary: hsl(120 10% 18.9%);
+  --secondary-foreground: hsl(120 10% 98%);
+  --muted: hsl(120 10% 18.9%);
+  --muted-foreground: hsl(120 10% 70%);
+  --accent: hsl(142 76% 20%);
+  --accent-foreground: hsl(142 76% 85%);
+  --additive: hsl(112 50% 36%);
+  --additive-foreground: hsl(0 0% 9%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(120 10% 22.9%);
+  --ring: hsl(142 76% 46%);
+}
+
+/* Purple Palette */
+[data-palette='purple'] {
+  --background: hsl(0 0% 100%);
+  --header-background: hsl(270 20% 92%);
+  --foreground: hsl(270 10% 3.9%);
+  --primary: hsl(262 83% 58%);
+  --primary-foreground: hsl(0 0% 98%);
+  --secondary: hsl(270 10% 80.1%);
+  --secondary-foreground: hsl(270 10% 9%);
+  --muted: hsl(270 10% 80.1%);
+  --muted-foreground: hsl(270 10% 40%);
+  --accent: hsl(262 83% 96%);
+  --accent-foreground: hsl(262 83% 20%);
+  --additive: hsl(112 50% 36%);
+  --additive-foreground: hsl(0 0% 9%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(270 10% 89.8%);
+  --ring: hsl(262 83% 58%);
+}
+
+[data-theme='dark'][data-palette='purple'] {
+  --background: hsl(270 10% 11.1%);
+  --header-background: hsl(270 10% 2.2%);
+  --foreground: hsl(270 10% 95%);
+  --primary: hsl(262 83% 68%);
+  --primary-foreground: hsl(0 0% 9%);
+  --secondary: hsl(270 10% 18.9%);
+  --secondary-foreground: hsl(270 10% 98%);
+  --muted: hsl(270 10% 18.9%);
+  --muted-foreground: hsl(270 10% 70%);
+  --accent: hsl(262 83% 20%);
+  --accent-foreground: hsl(262 83% 85%);
+  --additive: hsl(112 50% 36%);
+  --additive-foreground: hsl(0 0% 9%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(270 10% 22.9%);
+  --ring: hsl(262 83% 68%);
+}
+
+/* Orange Palette */
+[data-palette='orange'] {
+  --background: hsl(0 0% 100%);
+  --header-background: hsl(25 20% 92%);
+  --foreground: hsl(25 10% 3.9%);
+  --primary: hsl(25 95% 53%);
+  --primary-foreground: hsl(0 0% 98%);
+  --secondary: hsl(25 10% 80.1%);
+  --secondary-foreground: hsl(25 10% 9%);
+  --muted: hsl(25 10% 80.1%);
+  --muted-foreground: hsl(25 10% 40%);
+  --accent: hsl(25 95% 96%);
+  --accent-foreground: hsl(25 95% 20%);
+  --additive: hsl(112 50% 36%);
+  --additive-foreground: hsl(0 0% 9%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(25 10% 89.8%);
+  --ring: hsl(25 95% 53%);
+}
+
+[data-theme='dark'][data-palette='orange'] {
+  --background: hsl(25 10% 11.1%);
+  --header-background: hsl(25 10% 2.2%);
+  --foreground: hsl(25 10% 95%);
+  --primary: hsl(25 95% 63%);
+  --primary-foreground: hsl(0 0% 9%);
+  --secondary: hsl(25 10% 18.9%);
+  --secondary-foreground: hsl(25 10% 98%);
+  --muted: hsl(25 10% 18.9%);
+  --muted-foreground: hsl(25 10% 70%);
+  --accent: hsl(25 95% 20%);
+  --accent-foreground: hsl(25 95% 85%);
+  --additive: hsl(112 50% 36%);
+  --additive-foreground: hsl(0 0% 9%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(25 10% 22.9%);
+  --ring: hsl(25 95% 63%);
+}
+
+/* Rose Palette */
+[data-palette='rose'] {
+  --background: hsl(0 0% 100%);
+  --header-background: hsl(350 20% 92%);
+  --foreground: hsl(350 10% 3.9%);
+  --primary: hsl(346 77% 50%);
+  --primary-foreground: hsl(0 0% 98%);
+  --secondary: hsl(350 10% 80.1%);
+  --secondary-foreground: hsl(350 10% 9%);
+  --muted: hsl(350 10% 80.1%);
+  --muted-foreground: hsl(350 10% 40%);
+  --accent: hsl(346 77% 96%);
+  --accent-foreground: hsl(346 77% 20%);
+  --additive: hsl(112 50% 36%);
+  --additive-foreground: hsl(0 0% 9%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(350 10% 89.8%);
+  --ring: hsl(346 77% 50%);
+}
+
+[data-theme='dark'][data-palette='rose'] {
+  --background: hsl(350 10% 11.1%);
+  --header-background: hsl(350 10% 2.2%);
+  --foreground: hsl(350 10% 95%);
+  --primary: hsl(346 77% 60%);
+  --primary-foreground: hsl(0 0% 9%);
+  --secondary: hsl(350 10% 18.9%);
+  --secondary-foreground: hsl(350 10% 98%);
+  --muted: hsl(350 10% 18.9%);
+  --muted-foreground: hsl(350 10% 70%);
+  --accent: hsl(346 77% 20%);
+  --accent-foreground: hsl(346 77% 85%);
+  --additive: hsl(112 50% 36%);
+  --additive-foreground: hsl(0 0% 9%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(350 10% 22.9%);
+  --ring: hsl(346 77% 60%);
+}
+
+/* Cyan Palette */
+[data-palette='cyan'] {
+  --background: hsl(0 0% 100%);
+  --header-background: hsl(180 20% 92%);
+  --foreground: hsl(180 10% 3.9%);
+  --primary: hsl(188 94% 43%);
+  --primary-foreground: hsl(0 0% 98%);
+  --secondary: hsl(180 10% 80.1%);
+  --secondary-foreground: hsl(180 10% 9%);
+  --muted: hsl(180 10% 80.1%);
+  --muted-foreground: hsl(180 10% 40%);
+  --accent: hsl(188 94% 96%);
+  --accent-foreground: hsl(188 94% 20%);
+  --additive: hsl(112 50% 36%);
+  --additive-foreground: hsl(0 0% 9%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(180 10% 89.8%);
+  --ring: hsl(188 94% 43%);
+}
+
+[data-theme='dark'][data-palette='cyan'] {
+  --background: hsl(180 10% 11.1%);
+  --header-background: hsl(180 10% 2.2%);
+  --foreground: hsl(180 10% 95%);
+  --primary: hsl(188 94% 53%);
+  --primary-foreground: hsl(0 0% 9%);
+  --secondary: hsl(180 10% 18.9%);
+  --secondary-foreground: hsl(180 10% 98%);
+  --muted: hsl(180 10% 18.9%);
+  --muted-foreground: hsl(180 10% 70%);
+  --accent: hsl(188 94% 20%);
+  --accent-foreground: hsl(188 94% 85%);
+  --additive: hsl(112 50% 36%);
+  --additive-foreground: hsl(0 0% 9%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(180 10% 22.9%);
+  --ring: hsl(188 94% 53%);
+}
+
+/* Teal Palette */
+[data-palette='teal'] {
+  --background: hsl(0 0% 100%);
+  --header-background: hsl(173 20% 92%);
+  --foreground: hsl(173 10% 3.9%);
+  --primary: hsl(173 80% 40%);
+  --primary-foreground: hsl(0 0% 98%);
+  --secondary: hsl(173 10% 80.1%);
+  --secondary-foreground: hsl(173 10% 9%);
+  --muted: hsl(173 10% 80.1%);
+  --muted-foreground: hsl(173 10% 40%);
+  --accent: hsl(173 80% 96%);
+  --accent-foreground: hsl(173 80% 20%);
+  --additive: hsl(112 50% 36%);
+  --additive-foreground: hsl(0 0% 9%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(173 10% 89.8%);
+  --ring: hsl(173 80% 40%);
+}
+
+[data-theme='dark'][data-palette='teal'] {
+  --background: hsl(173 10% 11.1%);
+  --header-background: hsl(173 10% 2.2%);
+  --foreground: hsl(173 10% 95%);
+  --primary: hsl(173 80% 50%);
+  --primary-foreground: hsl(0 0% 9%);
+  --secondary: hsl(173 10% 18.9%);
+  --secondary-foreground: hsl(173 10% 98%);
+  --muted: hsl(173 10% 18.9%);
+  --muted-foreground: hsl(173 10% 70%);
+  --accent: hsl(173 80% 20%);
+  --accent-foreground: hsl(173 80% 85%);
+  --additive: hsl(112 50% 36%);
+  --additive-foreground: hsl(0 0% 9%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(173 10% 22.9%);
+  --ring: hsl(173 80% 50%);
+}
+
+/* Fallback for dark theme without palette */
+[data-theme='dark']:not([data-palette]) {
+  --background: hsl(0 0% 11.1%);
+  --header-background: hsl(0 0% 2.2%);
+  --foreground: hsl(0 0% 95%);
+  --primary: hsl(214 95% 62%);
+  --primary-foreground: hsl(0 0% 9%);
+  --secondary: hsl(0 0% 18.9%);
+  --secondary-foreground: hsl(0 0% 98%);
+  --muted: hsl(0 0% 18.9%);
+  --muted-foreground: hsl(0 0% 70%);
   --accent: hsl(217 91% 20%);
   --accent-foreground: hsl(217 91% 85%);
   --additive: hsl(112 50% 36%);
@@ -90,25 +357,10 @@
 
   html {
     @apply bg-background text-foreground scheme-light;
-
-    /* ADD THIS LINE: Reserves space for the scrollbar to prevent layout shifts */
-    scrollbar-gutter: stable;
   }
 
   html[data-theme='dark'] {
     @apply scheme-dark;
-  }
-
-  /* Prevent layout shifts during view transitions */
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 0.2s;
-  }
-
-  /* Ensure stable font rendering to prevent layout shifts */
-  h1, h2, h3, h4, h5, h6 {
-    font-variant-ligatures: none;
-    text-rendering: optimizeLegibility;
   }
 
   ::-webkit-scrollbar-corner {
@@ -161,27 +413,22 @@
     border-width: 0;
   }
 
-  .focus\:not-sr-only:focus {
-    position: static;
-    width: auto;
-    height: auto;
-    padding: inherit;
-    margin: inherit;
-    overflow: visible;
-    clip: auto;
-    white-space: normal;
+  /* Ensure theme selector button aligns with search button */
+  button[aria-label="Theme & appearance"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  button[aria-label="Theme & appearance"] svg {
+    display: block;
+    margin: 0;
   }
 }
 
-/* Tech badge - minimal styles to avoid conflicts with Framer Motion */
+/* Tech badge - optimized for performance */
 .tech-badge {
-  /* Remove conflicting animations - let Framer Motion handle transforms */
   will-change: auto;
-}
-
-.tech-badge-visible {
-  /* Just ensure visibility, no transform conflicts */
-  opacity: 1;
 }
 
 /* Background effects */
@@ -193,34 +440,62 @@
   filter: grayscale(40%) contrast(1.1) brightness(0.85);
 }
 
-/* Hero background - best practice: CSS background-image for backgrounds */
+/* Hero background - Removed per redesign */
 .hero-bg-container {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  /* Background image with WebP support and fallback */
-  background-image: url('/static/homelab.webp');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  /* Visual effects */
-  filter: grayscale(40%) contrast(1.1) brightness(0.85);
-  /* No transitions or animations - instant display */
-  transition: none;
-  animation: none;
-  /* Optimize rendering */
-  contain: layout style paint;
-  will-change: auto;
-  content-visibility: auto;
+  display: none;
 }
 
-/* Fallback for browsers that don't support WebP */
-@supports not (background-image: url('/static/homelab.webp')) {
-  .hero-bg-container {
-    background-image: url('/static/homelab.png');
+/* Dark mode background image - Removed per redesign */
+[data-theme='dark'] .hero-bg-container {
+  display: none;
+}
+
+/* Prevent layout shifts in hero section */
+.hero-section {
+  /* Prevent layout shifts during font loading and view transitions */
+  contain: layout style;
+  /* Ensure stable rendering */
+  will-change: auto;
+  /* Prevent view transition animations from causing shifts */
+  view-transition-name: none;
+}
+
+/* Prevent text shifting during font load in hero section */
+.hero-section h1,
+.hero-section p {
+  /* Prevent layout shifts during font loading */
+  text-rendering: optimizeLegibility;
+  /* Ensure stable rendering */
+  contain: layout;
+}
+
+/* On mobile, ensure hero content doesn't shift during navigation */
+@media (max-width: 640px) {
+  .hero-section {
+    /* Prevent layout shifts on mobile during view transitions */
+    contain: layout style paint;
+  }
+  
+  .hero-section > div:last-child {
+    /* Ensure content container has stable dimensions */
+    min-height: fit-content;
+    /* Prevent font loading shifts */
+    contain: layout;
+  }
+  
+  /* Prevent badge and text from shifting */
+  .hero-section .inline-flex,
+  .hero-section .space-y-4,
+  .hero-section .space-y-6 {
+    contain: layout;
+  }
+  
+  /* Ensure headings have stable dimensions */
+  .hero-section h1 {
+    min-height: 1.2em;
   }
 }
+
 
 /* Exclude from Astro view transitions for instant display */
 .hero-bg-picture {
@@ -243,3 +518,46 @@
 .pt-safe {
   padding-top: env(safe-area-inset-top, 0.75rem);
 }
+
+/* Premium Brand Logo - Apple-level typography & design */
+.brand-logo {
+  font-family: var(--font-brand);
+  font-weight: 800;
+  font-size: 1.625rem;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  position: relative;
+  display: inline-block;
+  text-transform: none;
+}
+
+
+/* Responsive sizing with perfect scaling */
+@media (max-width: 640px) {
+  .brand-logo {
+    font-size: 1.375rem;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .brand-logo {
+    font-size: 1.5rem;
+    letter-spacing: -0.025em;
+  }
+}
+
+@media (min-width: 1024px) {
+  .brand-logo {
+    font-size: 1.75rem;
+    letter-spacing: -0.03em;
+  }
+}
+
+
