@@ -61,6 +61,8 @@ flatten(tree)
             {flat.map(({ node, depth }) => {
               const isCurrent = node.id === currentPostId
               const indent = Math.min(depth, 6) * 12
+              const hasChildren = node.children?.length > 0
+              const isFolder = node.isFolder
               return (
                 <li
                   class={cn(
@@ -69,15 +71,23 @@ flatten(tree)
                   )}
                   style={`padding-left: ${indent}px`}
                 >
-                  <a
-                    href={`/wiki/${node.id}`}
-                    class="mobile-sections-item underline decoration-transparent underline-offset-[3px] transition-colors duration-200 hover:decoration-inherit flex items-center gap-2"
-                    data-section-id={node.id}
-                  >
-                    <span class="break-all hyphens-auto leading-snug">
-                      {node.title}
-                    </span>
-                  </a>
+                  {isFolder || hasChildren ? (
+                    <div class="flex items-center gap-2 text-foreground/60">
+                      <span class="break-all hyphens-auto leading-snug">
+                        {node.title}
+                      </span>
+                    </div>
+                  ) : (
+                    <a
+                      href={`/wiki/${node.id}`}
+                      class="mobile-sections-item underline decoration-transparent underline-offset-[3px] transition-colors duration-200 hover:decoration-inherit flex items-center gap-2"
+                      data-section-id={node.id}
+                    >
+                      <span class="break-all hyphens-auto leading-snug">
+                        {node.title}
+                      </span>
+                    </a>
+                  )}
                 </li>
               )
             })}

@@ -103,9 +103,10 @@ pathSegments.forEach((segment, index) => {
   >
     
     {/* ROW 1: Top Metadata (Breadcrumbs & Image) */}
-    <div class="col-start-1 col-end-2 xl:col-start-2 xl:col-end-3 flex flex-col gap-6">
+    <div class="col-start-2">
       <Breadcrumbs items={breadcrumbItems} />
-
+    </div>
+    <div class="col-start-2 flex flex-col gap-6">
       {post.data.image && (
         <Image
           src={post.data.image}
@@ -137,15 +138,15 @@ pathSegments.forEach((segment, index) => {
     {/* Center Column: Header and Article */}
     <div class="col-start-2 row-start-2 flex flex-col gap-y-6">
       {/* Post Header */}
-      <section class="text-center">
-        <div class="flex flex-col">
+      <section class="text-left">
+        <div class="flex flex-col gap-3">
           <h1 class="mb-2 scroll-mt-31 text-3xl leading-tight font-medium sm:text-4xl">
             {post.data.title}
           </h1>
 
-          <div class="text-muted-foreground divide-border mb-4 flex flex-col items-center justify-center divide-y text-xs sm:flex-row sm:flex-wrap sm:divide-x sm:divide-y-0 sm:text-sm">
-            {authors.length > 0 && (
-              <div class="flex w-full items-center justify-center gap-x-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
+          {authors.length > 0 && (
+            <div class="text-muted-foreground divide-border flex flex-col items-start justify-start gap-2 text-xs sm:flex-row sm:flex-wrap sm:divide-x sm:divide-y-0 sm:text-sm">
+              <div class="flex items-center gap-x-2 py-1 sm:px-2">
                 {authors.map((author) => (
                   <div class="flex items-center gap-x-1.5">
                     <Image src={author.avatar} alt={author.name} width={20} height={20} class="rounded-full" />
@@ -153,28 +154,9 @@ pathSegments.forEach((segment, index) => {
                   </div>
                 ))}
               </div>
-            )}
-
-            <div class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
-              <span>{formatDate(post.data.date)}</span>
             </div>
+          )}
 
-            <div class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
-              <span>{postReadingTime}</span>
-            </div>
-          </div>
-
-          <div class="flex flex-wrap justify-center gap-2">
-            {post.data.tags?.map((tag) => {
-              const { variant, className } = getTagVariant(tag)
-              return (
-                <a href={`/tags/${tag}`} class={`${badgeVariants({ variant })} ${className || ''}`}>
-                  <Icon name="lucide:hash" class="size-3" />
-                  {tag}
-                </a>
-              )
-            })}
-          </div>
         </div>
       </section>
 

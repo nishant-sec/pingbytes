@@ -48,40 +48,42 @@ const breadcrumbSchema = {
 <!-- BreadcrumbList Schema for SEO -->
 <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
 
-<Breadcrumb>
-  <BreadcrumbList>
-    <BreadcrumbItem>
-      <BreadcrumbLink href="/">
-        <Icon name="lucide:home" class="size-4 shrink-0" />
-      </BreadcrumbLink>
-    </BreadcrumbItem>
-    {
-      items.map((item, index) => (
-        <>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            {index === items.length - 1 ? (
-              <BreadcrumbPage>
-                <span class="flex items-center gap-x-2">
-                  {item.icon && (
-                    <Icon name={item.icon} class="size-4 shrink-0" />
-                  )}
-                  <span>{item.label}</span>
-                </span>
-              </BreadcrumbPage>
-            ) : (
-              <BreadcrumbLink href={item.href}>
-                <span class="flex items-center gap-x-2">
-                  {item.icon && (
-                    <Icon name={item.icon} class="size-4 shrink-0" />
-                  )}
-                  <span>{item.label}</span>
-                </span>
-              </BreadcrumbLink>
-            )}
-          </BreadcrumbItem>
-        </>
-      ))
-    }
-  </BreadcrumbList>
-</Breadcrumb>
+<div class="w-full overflow-x-auto">
+  <Breadcrumb>
+    <BreadcrumbList>
+      <BreadcrumbItem>
+        <BreadcrumbLink href="/">
+          <Icon name="lucide:home" class="size-4 shrink-0" />
+        </BreadcrumbLink>
+      </BreadcrumbItem>
+      {
+        items.map((item, index) => (
+          <>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              {index === items.length - 1 ? (
+                <BreadcrumbPage>
+                  <span class="flex items-center gap-x-2">
+                    {item.icon && (
+                      <Icon name={item.icon} class="size-4 shrink-0" />
+                    )}
+                    <span class="truncate">{item.label}</span>
+                  </span>
+                </BreadcrumbPage>
+              ) : (
+                <BreadcrumbLink href={item.href}>
+                  <span class="flex items-center gap-x-2">
+                    {item.icon && (
+                      <Icon name={item.icon} class="size-4 shrink-0" />
+                    )}
+                    <span class="truncate">{item.label}</span>
+                  </span>
+                </BreadcrumbLink>
+              )}
+            </BreadcrumbItem>
+          </>
+        ))
+      }
+    </BreadcrumbList>
+  </Breadcrumb>
+</div>

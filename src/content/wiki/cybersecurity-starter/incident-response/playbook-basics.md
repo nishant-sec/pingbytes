@@ -2,7 +2,7 @@
 title: "Incident Response Playbook Basics"
 description: "A small, repeatable flow for triaging beginner-level alerts."
 date: 2025-01-04
-tags: ["security", "incident-response"]
+tags: ["security", "labs"]
 draft: false
 ---
 
