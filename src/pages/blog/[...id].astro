@@ -3,9 +3,12 @@ import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import Disqus from '@/components/Disqus.astro'
 import Link from '@/components/Link.astro'
 import PostHead from '@/components/PostHead.astro'
+import PostReactions from '@/components/PostReactions.astro'
 import PostNavigation from '@/components/PostNavigation.astro'
+import RelatedPosts from '@/components/RelatedPosts.astro'
 import SubpostsHeader from '@/components/SubpostsHeader.astro'
 import SubpostsSidebar from '@/components/SubpostsSidebar.astro'
+import SocialShare from '@/components/SocialShare.astro'
 import TOCHeader from '@/components/TOCHeader.astro'
 import TOCSidebar from '@/components/TOCSidebar.astro'
 import { badgeVariants } from '@/components/ui/badge'
@@ -294,11 +297,23 @@ try {
         <Content />
       </article>
 
+      <div class="flex flex-col gap-6">
+        <PostReactions postId={currentPostId} className="w-full" />
+        <SocialShare
+          title={post.data.title}
+          url={new URL(`/blog/${currentPostId}`, SITE.href).href}
+          description={post.data.description}
+          className="w-full"
+        />
+      </div>
+
       <PostNavigation
         newerPost={navigation.newer}
         olderPost={navigation.older}
         parentPost={isCurrentSubpost ? navigation.parent : undefined}
       />
+
+      <RelatedPosts currentPostId={currentPostId} className="w-full" />
 
       {
         /* Only show Disqus on main posts, not subposts */
