@@ -18,23 +18,25 @@ const { project } = Astro.props
 >
   <Link
     href={project.data.link}
-    class="flex flex-col gap-4 sm:flex-row"
+    class="flex flex-col gap-4 sm:flex-row-reverse sm:items-stretch"
     external
   >
     {
       project.data.image && (
-        <div class="w-full sm:max-w-3xs sm:shrink-0">
+        <div class="w-full sm:max-w-3xs sm:shrink-0 overflow-hidden rounded-lg border border-border/60 bg-muted/40">
           <Image
             src={project.data.image}
             alt={project.data.name}
             width={1200}
             height={630}
-            class="object-cover"
+            class="h-full w-full object-cover"
+            loading="lazy"
+            decoding="async"
           />
         </div>
       )
     }
-    <div class="grow">
+    <div class="grow flex flex-col justify-center gap-2">
       <h3 class="mb-1 text-lg font-medium">
         {project.data.name}
       </h3>
