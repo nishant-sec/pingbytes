@@ -1,7 +1,7 @@
 ---
 import Link from '@/components/Link.astro'
 import MobileMenu from '@/components/ui/mobile-menu'
-import SearchButton from '@/components/react/SearchButton'
+import SearchButton from './react/SearchButton'
 import ThemeSelector from '@/components/react/ThemeSelector'
 import { NAV_LINKS } from '@/consts'
 import { Icon } from 'astro-icon/components'
@@ -12,8 +12,8 @@ const isExternalLink = (href: string) => {
 }
 ---
 
-<header class="w-full border-b border-border/40 bg-background/80 backdrop-blur-xl transition-all duration-300" transition:persist>
-  <div class="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
+<header class="bg-background/80 sticky top-0 z-50 w-full border-b border-border/40 backdrop-blur-xl transition-all duration-300" transition:persist>
+  <div class="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
     <Link href="/" class="flex items-center gap-2 group transition-transform active:scale-95" data-astro-reload>
       <span class="brand-logo">
         Merox
