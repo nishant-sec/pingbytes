@@ -45,7 +45,7 @@ const personSchema = {
   <PageHead slot="head" title="About | Robert Melcher" />
   
   <!-- Person Schema for About page SEO -->
-  <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(personSchema)} />
   
   <Breadcrumbs items={[{ label: 'About', icon: 'lucide:user' }]} />
 

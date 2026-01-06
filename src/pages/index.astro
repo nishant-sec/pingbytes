@@ -91,9 +91,9 @@ const experience = [
 <Layout class="max-w-3xl" transition:persist="home-layout">
   <PageHead slot="head" title="Merox - Insights from my tech journey" fullTitle={true} />
 
-  <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
-  <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
-  <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
   
   <link rel="preload" as="image" href="/meroxindc1.webp" type="image/webp" fetchpriority="high" media="(min-width: 768px)" />
   

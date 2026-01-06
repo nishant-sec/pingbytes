@@ -150,33 +150,12 @@ const copyButtonId = `copy-link-${Math.random().toString(36).substring(2, 9)}`
     let restoreTimeoutId: ReturnType<typeof setTimeout> | null = null
     let isCopying = false // Debounce flag
 
-    /**
-     * Copy text to clipboard using modern API with fallback
-     */
+    // Copy text using the modern Clipboard API
     async function copyToClipboard(text: string): Promise<boolean> {
+      if (!navigator.clipboard || !window.isSecureContext) return false
       try {
-        // Modern Clipboard API (preferred)
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          await navigator.clipboard.writeText(text)
-          return true
-        }
-
-        // Fallback for older browsers
-        const textArea = document.createElement('textarea')
-        textArea.value = text
-        textArea.style.position = 'fixed'
-        textArea.style.left = '-999999px'
-        textArea.style.top = '-999999px'
-        textArea.setAttribute('readonly', '')
-        document.body.appendChild(textArea)
-
-        // Select and copy
-        textArea.select()
-        textArea.setSelectionRange(0, text.length)
-
-        const success = document.execCommand('copy')
-        document.body.removeChild(textArea)
-        return success
+        await navigator.clipboard.writeText(text)
+        return true
       } catch (err) {
         console.error('Failed to copy to clipboard:', err)
         return false
@@ -335,4 +314,3 @@ const copyButtonId = `copy-link-${Math.random().toString(36).substring(2, 9)}`
     document.addEventListener('astro:before-swap', cleanup)
   })()
 </script>
-

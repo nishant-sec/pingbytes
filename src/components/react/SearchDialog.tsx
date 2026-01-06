@@ -39,7 +39,6 @@ const INDEX_VERSION = '1.0'
 // Calculate relevance score
 function calculateRelevanceScore(
   result: SearchResult,
-  query: string,
   queryLower: string,
 ): number {
   let score = 0
@@ -337,7 +336,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
         // Calculate relevance scores and sort
         const scoredResults = matchedResults.map((result) => ({
           result,
-          score: calculateRelevanceScore(result, searchQuery, normalizedQuery),
+          score: calculateRelevanceScore(result, normalizedQuery),
         }))
 
         // Sort by score (descending)

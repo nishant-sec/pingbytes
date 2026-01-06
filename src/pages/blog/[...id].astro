@@ -11,7 +11,6 @@ import SubpostsSidebar from '@/components/SubpostsSidebar.astro'
 import SocialShare from '@/components/SocialShare.astro'
 import TOCHeader from '@/components/TOCHeader.astro'
 import TOCSidebar from '@/components/TOCSidebar.astro'
-import { badgeVariants } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import Layout from '@/layouts/Layout.astro'
 import { SITE } from '@/consts'
@@ -28,7 +27,7 @@ import {
   isSubpost,
   parseAuthors,
 } from '@/lib/data-utils'
-import { formatDate, getTagVariant } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
 import { Image } from 'astro:assets'
 import { render } from 'astro:content'

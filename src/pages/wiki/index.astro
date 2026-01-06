@@ -54,7 +54,7 @@ const structuredData = {
     description="Free online learning resources and tools for system administrators, developers, and IT professionals."
   />
   
-  <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
 
   <Breadcrumbs items={[{ label: 'Wiki', icon: 'lucide:book-open' }]} />
 

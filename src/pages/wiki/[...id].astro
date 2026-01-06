@@ -8,11 +8,9 @@ import TOCSidebar from '@/components/TOCSidebar.astro'
 import PostNavigation from '@/components/PostNavigation.astro'
 import WikiFileTree from '@/components/WikiFileTree.astro'
 import MobileSectionsHeader from '@/components/MobileSectionsHeader.astro'
-import { badgeVariants } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import Layout from '@/layouts/Layout.astro'
 import { getAllWikiPosts, parseAuthors, getWikiTree, setActiveFlags, getAdjacentWikiPosts } from '@/lib/data-utils'
-import { formatDate, getTagVariant, readingTime, calculateWordCountFromHtml } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
 import { Image } from 'astro:assets'
 import { render } from 'astro:content'
@@ -41,10 +39,6 @@ const { Content, headings } = await render(post)
 
 // 3. Handle Authors
 const authors = await parseAuthors(post.data.authors ?? [])
-
-// 4. Calculate Reading Time
-const wordCount = calculateWordCountFromHtml(post.body || '')
-const postReadingTime = readingTime(wordCount)
 
 // 5. Generate Simple TOC
 const tocSections = [

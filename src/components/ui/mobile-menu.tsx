@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { NAV_LINKS } from '@/consts'
-import { Menu, ExternalLink, Palette, Sun, Moon, Check } from 'lucide-react'
+import { Menu, ExternalLink, Sun, Moon, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   COLOR_PALETTES,
