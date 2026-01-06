@@ -8,10 +8,12 @@ type Props = {
   sections: TOCSection[]
   currentPostId: string
   className?: string
+  basePath?: '/blog' | '/wiki'
 }
 
-const { sections, currentPostId, className } = Astro.props
-const isCurrentSubpost = isSubpost(currentPostId)
+const { sections, currentPostId, className, basePath = '/blog' } = Astro.props
+const isWiki = basePath === '/wiki'
+const isCurrentSubpost = isWiki ? false : isSubpost(currentPostId)
 const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
 ---
 
@@ -60,17 +62,17 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
                             ? 'text-foreground/40'
                             : 'text-foreground/60',
                         )}
-                      >
-                        <a
-                          href={
-                            isCurrentSubpost
-                              ? `/blog/${parentId}#${heading.slug}`
-                              : `#${heading.slug}`
-                          }
-                          class="marker:text-foreground/30 list-none underline decoration-transparent underline-offset-[3px] transition-colors duration-200 hover:decoration-inherit break-all hyphens-auto"
-                          data-heading-link={heading.slug}
                         >
-                          {heading.text}
+                          <a
+                            href={
+                              isCurrentSubpost
+                                ? `${basePath}/${parentId}#${heading.slug}`
+                                : `#${heading.slug}`
+                            }
+                            class="marker:text-foreground/30 list-none underline decoration-transparent underline-offset-[3px] transition-colors duration-200 hover:decoration-inherit break-all hyphens-auto"
+                            data-heading-link={heading.slug}
+                          >
+                            {heading.text}
                         </a>
                       </li>
                     ))}
@@ -90,12 +92,12 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
                             ? 'text-foreground'
                             : 'text-foreground/60',
                         )}
-                      >
-                        <a
-                          href={
-                            section.subpostId === currentPostId
-                              ? '#'
-                              : `/blog/${section.subpostId}`
+                        >
+                          <a
+                            href={
+                              section.subpostId === currentPostId
+                                ? '#'
+                                : `${basePath}/${section.subpostId}`
                           }
                             class="marker:text-foreground/30 list-none underline decoration-transparent underline-offset-[3px] transition-colors duration-200 hover:decoration-inherit break-all hyphens-auto"
                             data-heading-link={
@@ -121,7 +123,7 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
                             href={
                               section.subpostId === currentPostId
                                 ? `#${heading.slug}`
-                                : `/blog/${section.subpostId}#${heading.slug}`
+                                : `${basePath}/${section.subpostId}#${heading.slug}`
                             }
                             class="marker:text-foreground/30 hover:text-foreground/60 list-none underline decoration-transparent underline-offset-[3px] transition-colors duration-200 hover:decoration-inherit break-all hyphens-auto"
                             data-heading-link={

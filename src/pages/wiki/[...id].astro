@@ -190,7 +190,11 @@ const nextNavLabel = navigation.nextSectionTitle
     {/* Right Sidebar (Table of Contents) */}
     {tocSections.length > 0 && (
       <div class="col-start-1 xl:col-start-3 row-start-2 hidden xl:block">
-        <TOCSidebar sections={tocSections} currentPostId={currentPostId} />
+        <TOCSidebar
+          sections={tocSections}
+          currentPostId={currentPostId}
+          basePath="/wiki"
+        />
       </div>
     )}
 
