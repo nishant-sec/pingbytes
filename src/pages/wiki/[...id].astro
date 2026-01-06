@@ -90,10 +90,13 @@ pathSegments.forEach((segment, index) => {
 <Layout>
   <PostHead slot="head" post={post as unknown as CollectionEntry<'blog'>} />
   
-  {/* Table of Contents Header (Visible on Mobile) */}
-  {headings?.length > 0 && <TOCHeader slot="table-of-contents" headings={headings} />}
-  {/* Mobile Sections Header (Visible on Mobile) */}
-  {wikiTree.length > 0 && <MobileSectionsHeader tree={wikiTree} currentPostId={currentPostId} />}
+  {/* Sections + TOC in header slot (mobile) */}
+  {wikiTree.length > 0 && (
+    <MobileSectionsHeader slot="table-of-contents" tree={wikiTree} currentPostId={currentPostId} />
+  )}
+  {headings?.length > 0 && (
+    <TOCHeader slot="table-of-contents" headings={headings} />
+  )}
 
   <section
     class="grid grid-cols-[minmax(0px,1fr)_min(calc(var(--breakpoint-md)-2rem),100%)_minmax(0px,1fr)] gap-y-6"

@@ -7,7 +7,7 @@ draft: false
 ---
 
 ## Core concepts
-- CIDR notation expresses network/prefix length (e.g., `/24`).
+- CIDR notation expresses network/prefix length (e.g., `/24`).  Borrow bits from host portion to create smaller subnets.
 - Borrow bits from host portion to create smaller subnets.
 - Network = base address AND mask; broadcast = base OR inverted mask.
 

@@ -44,6 +44,9 @@
   --background: hsl(0 0% 100%);
   --header-background: hsl(0 0% 89%);
   --foreground: hsl(0 0% 3.9%);
+  /* Layout heights */
+  --header-h: 56px;
+  --sections-h: 48px;
   --primary: hsl(214 95% 52%);
   --primary-foreground: hsl(0 0% 98%);
   --secondary: hsl(0 0% 80.1%);
@@ -240,4 +243,3 @@
 .pt-safe {
   padding-top: env(safe-area-inset-top, 0.75rem);
 }
-
