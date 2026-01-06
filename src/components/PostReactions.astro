@@ -1,11 +1,6 @@
 ---
 import { cn } from '@/lib/utils'
 
-interface Props {
-  postId: string
-  className?: string
-}
-
 const { postId, className } = Astro.props
 ---
 
@@ -22,40 +17,27 @@ const { postId, className } = Astro.props
       aria-label="React with clap"
       title="Clap"
     >
-      <span class="text-lg leading-none" aria-hidden="true">👏</span>
+      <span class="text-lg leading-none" aria-hidden="true">dY`?</span>
       <span class="text-xs font-semibold text-foreground" data-count="clap-count">0</span>
     </button>
   </div>
 </section>
 
-<script lang="ts">
-  /**
-   * Clap-only reactions
-   * Logic adapted from merox-main PostReactions (fetch counts, single reaction lock, localStorage tracking)
-   */
+<script>
+  // @ts-nocheck
+  // Plain JS reactions
   ;(() => {
-    'use strict'
-
     const USER_REACTIONS_KEY = 'user-post-reactions'
     const API_BASE = '/api/reactions'
 
-    type ReactionKey = string
-    type ReactionCounts = Record<ReactionKey, number>
-    type ReactionButton = HTMLButtonElement
-    type ReactionTimeout = ReturnType<typeof setTimeout>
-    type ReactionResponse = {
-      reactions?: ReactionCounts
-      count?: number
-    }
+    let reactionButtons = []
+    let timeoutId = null
+    let scaleTimeoutIds = new Map()
+    const processingButtons = new Set()
+    let serverReactions = {}
+    let currentPostId = null
 
-    let reactionButtons: ReactionButton[] = []
-    let timeoutId: ReactionTimeout | null = null
-    let scaleTimeoutIds: Map<ReactionButton, ReactionTimeout> = new Map()
-    const processingButtons = new Set<ReactionButton>()
-    let serverReactions: ReactionCounts = {}
-    let currentPostId: string | null = null
-
-    function getUserReactions(): Record<string, ReactionKey[]> {
+    const getUserReactions = () => {
       try {
         const stored = localStorage.getItem(USER_REACTIONS_KEY)
         return stored ? JSON.parse(stored) : {}
@@ -64,19 +46,14 @@ const { postId, className } = Astro.props
       }
     }
 
-    function hasUserReacted(postId: string): boolean
-    function hasUserReacted(postId: string, reactionKey: ReactionKey): boolean
-    function hasUserReacted(
-      postId: string,
-      reactionKey?: ReactionKey,
-    ): boolean {
+    const hasUserReacted = (postId, reactionKey) => {
       const userReactions = getUserReactions()
       const postReactions = userReactions[postId] || []
       if (reactionKey) return postReactions.includes(reactionKey)
       return postReactions.length > 0
     }
 
-    function markUserReacted(postId: string, reactionKey: ReactionKey): void {
+    const markUserReacted = (postId, reactionKey) => {
       const userReactions = getUserReactions()
       if (!userReactions[postId]) {
         userReactions[postId] = []
@@ -91,42 +68,32 @@ const { postId, className } = Astro.props
       }
     }
 
-    async function fetchReactionCounts(postId: string): Promise<void> {
+    const fetchReactionCounts = async (postId) => {
       try {
         const response = await fetch(`${API_BASE}/${postId}`)
         if (!response.ok) {
           console.warn('Failed to fetch reaction counts:', response.statusText)
           return
         }
-        const data = (await response.json()) as ReactionResponse
+        const data = await response.json()
         serverReactions = data.reactions ?? {}
 
-        if (reactionButtons.length > 0) {
-          reactionButtons.forEach((button: ReactionButton) => {
-            const reactionKey = button.dataset.reaction as ReactionKey | undefined
-            if (reactionKey) {
-              const count = serverReactions[reactionKey] ?? 0
-              const countElement =
-                button.querySelector('[data-count]')
-              if (countElement) {
-                countElement.textContent = count.toString()
-              }
-            }
-          })
-        }
+        reactionButtons.forEach((button) => {
+          const reactionKey = button.dataset.reaction
+          if (!reactionKey) return
+
+          const count = serverReactions[reactionKey] ?? 0
+          const countElement = button.querySelector('[data-count]')
+          if (countElement) countElement.textContent = count.toString()
+        })
       } catch (error) {
         console.error('Error fetching reaction counts:', error)
       }
     }
 
-    function getReactionCount(reactionKey: ReactionKey): number {
-      return serverReactions[reactionKey] || 0
-    }
+    const getReactionCount = (reactionKey) => serverReactions[reactionKey] || 0
 
-    async function incrementReaction(
-      postId: string,
-      reactionKey: ReactionKey,
-    ): Promise<number | null> {
+    const incrementReaction = async (postId, reactionKey) => {
       if (hasUserReacted(postId)) return null
       try {
         const response = await fetch(`${API_BASE}/${postId}`, {
@@ -140,7 +107,7 @@ const { postId, className } = Astro.props
           return null
         }
 
-        const data = (await response.json()) as ReactionResponse
+        const data = await response.json()
         serverReactions = data.reactions ?? {}
         markUserReacted(postId, reactionKey)
 
@@ -151,15 +118,9 @@ const { postId, className } = Astro.props
       }
     }
 
-    function updateReactionDisplay(
-      button: ReactionButton,
-      count: number,
-      isReacted = false,
-    ): void {
+    const updateReactionDisplay = (button, count, isReacted = false) => {
       const countElement = button.querySelector('[data-count]')
-      if (countElement) {
-        countElement.textContent = count.toString()
-      }
+      if (countElement) countElement.textContent = count.toString()
 
       if (isReacted) {
         button.disabled = true
@@ -187,15 +148,14 @@ const { postId, className } = Astro.props
       }
     }
 
-    async function initializeReactionCounts(): Promise<void> {
+    const initializeReactionCounts = async () => {
       if (!currentPostId || reactionButtons.length === 0) return
 
       await fetchReactionCounts(currentPostId)
 
-      reactionButtons.forEach((button: ReactionButton) => {
+      reactionButtons.forEach((button) => {
         const postId = button.dataset.postId || ''
-        const reactionKey = button.dataset.reaction as ReactionKey | undefined
-
+        const reactionKey = button.dataset.reaction
         if (!postId || !reactionKey) return
 
         const count = getReactionCount(reactionKey)
@@ -204,13 +164,12 @@ const { postId, className } = Astro.props
       })
     }
 
-    async function handleReactionClick(e: Event): Promise<void> {
-      const button = e.currentTarget as ReactionButton | null
+    const handleReactionClick = async (e) => {
+      const button = e.currentTarget
       if (!button) return
 
       const postId = button.dataset.postId
-      const reactionKey = button.dataset.reaction as ReactionKey | undefined
-
+      const reactionKey = button.dataset.reaction
       if (!postId || !reactionKey) return
 
       if (processingButtons.has(button)) {
@@ -229,32 +188,24 @@ const { postId, className } = Astro.props
       button.disabled = true
 
       const newCount = await incrementReaction(postId, reactionKey)
-
       if (newCount !== null) {
         updateReactionDisplay(button, newCount, true)
 
-        if (reactionButtons.length > 0) {
-          reactionButtons.forEach((otherButton: ReactionButton) => {
-            const otherPostId = otherButton.dataset.postId
-            const otherReactionKey =
-              otherButton.dataset.reaction as ReactionKey | undefined
+        reactionButtons.forEach((otherButton) => {
+          const otherPostId = otherButton.dataset.postId
+          const otherReactionKey = otherButton.dataset.reaction
+          if (!otherPostId || !otherReactionKey || otherPostId !== postId) return
 
-            if (otherPostId && otherReactionKey && otherPostId === postId) {
-              const otherCount = getReactionCount(otherReactionKey)
-              const countElement =
-                otherButton.querySelector('[data-count]')
-              if (countElement) {
-                countElement.textContent = otherCount.toString()
-              }
+          const otherCount = getReactionCount(otherReactionKey)
+          const countElement = otherButton.querySelector('[data-count]')
+          if (countElement) countElement.textContent = otherCount.toString()
 
-              if (otherReactionKey !== reactionKey) {
-                otherButton.disabled = true
-                otherButton.classList.add('opacity-60', 'cursor-not-allowed')
-                otherButton.classList.remove('hover:bg-muted')
-              }
-            }
-          })
-        }
+          if (otherReactionKey !== reactionKey) {
+            otherButton.disabled = true
+            otherButton.classList.add('opacity-60', 'cursor-not-allowed')
+            otherButton.classList.remove('hover:bg-muted')
+          }
+        })
       } else {
         button.disabled = true
         const count = getReactionCount(reactionKey)
@@ -266,52 +217,46 @@ const { postId, className } = Astro.props
       }, 300)
     }
 
-    function initReactions(): void {
-      if (reactionButtons.length > 0) {
-        reactionButtons.forEach((button: ReactionButton) => {
-          button.removeEventListener('click', handleReactionClick)
-        })
-      }
+    const initReactions = () => {
+      reactionButtons.forEach((button) => {
+        button.removeEventListener('click', handleReactionClick)
+      })
 
-      const buttonNodes = document.querySelectorAll<HTMLButtonElement>(
+      const buttonNodes = document.querySelectorAll(
         'button[data-reaction][data-post-id]',
       )
-      reactionButtons = Array.from(buttonNodes) as ReactionButton[]
-
+      reactionButtons = Array.from(buttonNodes)
       if (reactionButtons.length === 0) return
 
       const firstButton = reactionButtons[0]
       currentPostId = firstButton.dataset.postId || null
-
       if (!currentPostId) {
         console.error('Post ID not found')
         return
       }
 
-      reactionButtons.forEach((button: ReactionButton) => {
+      reactionButtons.forEach((button) => {
         button.addEventListener('click', handleReactionClick)
       })
 
       initializeReactionCounts()
     }
 
-    function cleanup(): void {
+    const cleanup = () => {
       if (timeoutId) {
         clearTimeout(timeoutId)
         timeoutId = null
       }
 
-      scaleTimeoutIds.forEach((timeout: ReactionTimeout) => {
+      scaleTimeoutIds.forEach((timeout) => {
         clearTimeout(timeout)
       })
       scaleTimeoutIds.clear()
 
-      if (reactionButtons.length > 0) {
-        reactionButtons.forEach((button: ReactionButton) => {
-          button.removeEventListener('click', handleReactionClick)
-        })
-        reactionButtons = []
-      }
+      reactionButtons.forEach((button) => {
+        button.removeEventListener('click', handleReactionClick)
+      })
+      reactionButtons = []
     }
 
     if (document.readyState === 'loading') {
