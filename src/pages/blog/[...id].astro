@@ -183,7 +183,7 @@ try {
     }
 
     <div class="col-start-2 row-start-3 flex flex-col gap-y-8 text-left">
-      <div class="flex flex-col gap-4">
+      <div class="flex flex-col items-center gap-4 text-center">
         <h1
           class="mb-2 scroll-mt-31 text-3xl leading-tight font-medium sm:text-4xl"
           id="post-title"
@@ -192,11 +192,11 @@ try {
         </h1>
 
         <div
-          class="text-muted-foreground divide-border flex flex-col items-start justify-start divide-y text-xs sm:flex-row sm:flex-wrap sm:divide-x sm:divide-y-0 sm:text-sm"
+          class="text-muted-foreground divide-border flex flex-col items-center justify-center divide-y text-xs sm:flex-row sm:flex-wrap sm:divide-x sm:divide-y-0 sm:text-sm"
         >
           {
             authors.length > 0 && (
-              <div class="flex w-full items-center gap-x-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
+              <div class="flex w-full items-center justify-center gap-x-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
                 {authors.map((author) => (
                   <div class="flex items-center gap-x-1.5">
                     <Image
@@ -256,7 +256,7 @@ try {
           }
         </div>
 
-        <div class="flex flex-wrap gap-2">
+        <div class="flex flex-wrap justify-center gap-2">
           {
             post.data.tags &&
               post.data.tags.length > 0 &&
