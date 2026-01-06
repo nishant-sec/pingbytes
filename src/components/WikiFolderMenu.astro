@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components'
 import { cn } from '@/lib/utils'
+import Link from '@/components/Link.astro'
 import type { WikiNode } from '@/lib/data-utils'
 
 interface Props {
@@ -13,48 +14,47 @@ const { items, title = 'In this folder', currentPostId } = Astro.props
 ---
 
 {items.length > 0 && (
-  <section class="rounded-lg border bg-card px-4 py-3 sm:px-6 sm:py-4">
-    <div class="mb-3 flex items-center gap-2">
+  <section class="flex flex-col gap-2">
+    <div class="flex items-center gap-2 px-1">
       <Icon name="lucide:folder-tree" class="size-4 text-primary" />
       <h2 class="text-base font-semibold">{title}</h2>
     </div>
 
-    <ul class="divide-y divide-border/60">
+    <ul class="space-y-1">
       {items.map((child) => {
         const isActive = child.id === currentPostId
         const isFolder = child.isFolder || child.children.length > 0
-        const childCount = child.children.length
 
         return (
           <li>
-            <a
+            <Link
               href={`/wiki/${child.id}`}
               class={cn(
-                'flex items-start gap-3 py-3 transition-colors',
-                isActive
-                  ? 'text-primary'
-                  : 'text-foreground/80 hover:text-foreground'
+                'group block -mx-2 rounded-xl border border-transparent px-4 py-4 shadow-none transition-all duration-300 hover:-translate-y-0.5 hover:border-border/50 hover:bg-muted/40 hover:shadow-sm',
+                isActive && 'border-border/60 bg-muted/30 text-primary'
               )}
             >
-              <Icon
-                name={isFolder ? 'lucide:folder' : 'lucide:file-text'}
-                class="mt-0.5 size-4 text-muted-foreground"
-              />
-              <div class="flex-1 space-y-0.5">
-                <p class="text-sm font-medium leading-snug">{child.title}</p>
-                <p class="text-xs text-muted-foreground">
-                  {isFolder
-                    ? childCount > 0
-                      ? `${childCount} item${childCount === 1 ? '' : 's'}`
-                      : 'Folder'
-                    : 'Open page'}
-                </p>
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-start gap-3">
+                  <Icon
+                    name={isFolder ? 'lucide:folder' : 'lucide:file-text'}
+                    class="mt-0.5 size-4 text-muted-foreground"
+                  />
+                  <div class="space-y-1">
+                    <p class="text-sm font-semibold leading-snug text-foreground/90 group-hover:text-primary">
+                      {child.title}
+                    </p>
+                    <p class="text-xs text-muted-foreground/80">
+                      {isFolder ? 'Folder' : 'Open page'}
+                    </p>
+                  </div>
+                </div>
+                <Icon
+                  name="lucide:arrow-up-right"
+                  class="mt-1 size-4 shrink-0 text-muted-foreground/40 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
+                />
               </div>
-              <Icon
-                name="lucide:arrow-up-right"
-                class="mt-0.5 size-3.5 text-muted-foreground"
-              />
-            </a>
+            </Link>
           </li>
         )
       })}
