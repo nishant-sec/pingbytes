@@ -120,6 +120,44 @@ export async function getRecentPosts(
   return posts.slice(0, count)
 }
 
+export async function getAdjacentWikiPosts(
+  currentId: string,
+  rootPath?: string,
+): Promise<{
+  newer: CollectionEntry<'wiki'> | null
+  older: CollectionEntry<'wiki'> | null
+  nextSectionTitle: string | null
+}> {
+  const allWikiPosts = await getAllWikiPosts()
+  const scopedPosts = rootPath
+    ? allWikiPosts.filter(
+        (post) => post.id === rootPath || post.id.startsWith(`${rootPath}/`),
+      )
+    : allWikiPosts
+
+  const currentIndex = scopedPosts.findIndex((post) => post.id === currentId)
+
+  if (currentIndex === -1) {
+    return { newer: null, older: null, nextSectionTitle: null }
+  }
+
+  const older = currentIndex > 0 ? scopedPosts[currentIndex - 1] : null
+  const newer =
+    currentIndex < scopedPosts.length - 1 ? scopedPosts[currentIndex + 1] : null
+
+  const currentRoot = currentId.split('/')[0] ?? ''
+  const nextRoot = newer ? newer.id.split('/')[0] ?? '' : ''
+  const formatSection = (segment: string) =>
+    segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' ')
+
+  const nextSectionTitle =
+    newer && nextRoot !== currentRoot && nextRoot !== ''
+      ? formatSection(nextRoot)
+      : null
+
+  return { older, newer, nextSectionTitle }
+}
+
 export async function getRelatedPosts(
   currentPostId: string,
   limit: number = 3,
@@ -369,7 +407,10 @@ export async function getAllWikiPosts() {
     .sort((a, b) => {
       const orderA = a.data.order ?? 999
       const orderB = b.data.order ?? 999
-      return orderA - orderB
+      if (orderA !== orderB) return orderA - orderB
+      const titleA = a.data.title ?? a.id
+      const titleB = b.data.title ?? b.id
+      return titleA.localeCompare(titleB, undefined, { sensitivity: 'base' })
     })
 }
 

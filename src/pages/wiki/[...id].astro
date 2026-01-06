@@ -5,12 +5,13 @@ import type { BreadcrumbItem } from '@/components/Breadcrumbs.astro'
 import PostHead from '@/components/PostHead.astro'
 import TOCHeader from '@/components/TOCHeader.astro'
 import TOCSidebar from '@/components/TOCSidebar.astro'
+import PostNavigation from '@/components/PostNavigation.astro'
 import WikiFileTree from '@/components/WikiFileTree.astro'
 import MobileSectionsHeader from '@/components/MobileSectionsHeader.astro'
 import { badgeVariants } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import Layout from '@/layouts/Layout.astro'
-import { getAllWikiPosts, parseAuthors, getWikiTree, setActiveFlags } from '@/lib/data-utils'
+import { getAllWikiPosts, parseAuthors, getWikiTree, setActiveFlags, getAdjacentWikiPosts } from '@/lib/data-utils'
 import { formatDate, getTagVariant, readingTime, calculateWordCountFromHtml } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
 import { Image } from 'astro:assets'
@@ -85,6 +86,12 @@ pathSegments.forEach((segment, index) => {
     icon: isLast ? 'lucide:file-text' : undefined
   })
 })
+
+// 7. Navigation (previous/next) for wiki
+const navigation = await getAdjacentWikiPosts(currentPostId, rootFolderId)
+const nextNavLabel = navigation.nextSectionTitle
+  ? `Next Section: ${navigation.nextSectionTitle}`
+  : 'Next Note'
 ---
 
 <Layout>
@@ -169,6 +176,13 @@ pathSegments.forEach((segment, index) => {
         id="toc-end-marker"
         class="h-px w-full opacity-0 pointer-events-none"
         aria-hidden="true"
+      />
+
+      <PostNavigation
+        newerPost={navigation.newer}
+        olderPost={navigation.older}
+        previousLabel="Previous Note"
+        nextLabel={nextNavLabel}
       />
 
     </div>

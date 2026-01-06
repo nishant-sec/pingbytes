@@ -3,9 +3,43 @@ import Link from '@/components/Link.astro'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
+import type { CollectionEntry } from 'astro:content'
 
-const { newerPost, olderPost, parentPost } = Astro.props
+type PostEntry = CollectionEntry<'blog'> | CollectionEntry<'wiki'>
+
+type Props = {
+  newerPost?: PostEntry | null
+  olderPost?: PostEntry | null
+  parentPost?: CollectionEntry<'blog'> | null
+  previousLabel?: string
+  nextLabel?: string
+}
+
+const {
+  newerPost = null,
+  olderPost = null,
+  parentPost = null,
+  previousLabel,
+  nextLabel,
+}: Props = Astro.props
+
 const isSubpost = !!parentPost
+const resolvedPreviousLabel =
+  previousLabel ?? (isSubpost ? 'Previous Subpost' : 'Previous Post')
+const resolvedNextLabel =
+  nextLabel ?? (isSubpost ? 'Next Subpost' : 'Next Post')
+
+const getHref = (post: PostEntry | null) => {
+  if (!post) return '#'
+  const base =
+    post.collection && post.collection === 'wiki' ? '/wiki' : '/blog'
+  const hash = post.collection === 'blog' ? '#post-title' : ''
+  return `${base}/${post.id}${hash}`
+}
+
+const isWikiNav =
+  (olderPost && olderPost.collection === 'wiki') ||
+  (newerPost && newerPost.collection === 'wiki')
 ---
 
 <nav
@@ -15,7 +49,7 @@ const isSubpost = !!parentPost
   )}
 >
   <Link
-    href={olderPost ? `/blog/${olderPost.id}#post-title` : '#'}
+    href={getHref(olderPost)}
     class={cn(
       buttonVariants({ variant: 'outline' }),
       'rounded-lg group flex items-center justify-start size-full',
@@ -29,12 +63,16 @@ const isSubpost = !!parentPost
     />
     <div class="flex flex-col items-start overflow-hidden text-wrap">
       <span class="text-muted-foreground text-left text-xs">
-        {isSubpost ? 'Previous Subpost' : 'Previous Post'}
+        {resolvedPreviousLabel}
       </span>
       <span class="w-full text-left text-sm text-balance text-ellipsis">
         {
           olderPost?.data.title ||
-            (isSubpost ? 'No older subpost' : "You're at the oldest post!")
+            (isWikiNav
+              ? "You're at the start."
+              : isSubpost
+                ? 'No older subpost'
+                : "You're at the oldest post!")
         }
       </span>
     </div>
@@ -67,7 +105,7 @@ const isSubpost = !!parentPost
   }
 
   <Link
-    href={newerPost ? `/blog/${newerPost.id}#post-title` : '#'}
+    href={getHref(newerPost)}
     class={cn(
       buttonVariants({ variant: 'outline' }),
       'rounded-lg group flex items-center justify-end size-full',
@@ -77,12 +115,16 @@ const isSubpost = !!parentPost
   >
     <div class="flex flex-col items-end overflow-hidden text-wrap">
       <span class="text-muted-foreground text-right text-xs">
-        {isSubpost ? 'Next Subpost' : 'Next Post'}
+        {resolvedNextLabel}
       </span>
       <span class="w-full text-right text-sm text-balance text-ellipsis">
         {
           newerPost?.data.title ||
-            (isSubpost ? 'No newer subpost' : "You're at the newest post!")
+            (isWikiNav
+              ? "You're at the end."
+              : isSubpost
+                ? 'No newer subpost'
+                : "You're at the newest post!")
         }
       </span>
     </div>
