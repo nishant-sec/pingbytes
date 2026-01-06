@@ -84,59 +84,64 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
                       section.subpostId === currentPostId ? 'bg-muted/50' : '',
                     )}
                   >
-                    <ul class="flex list-none flex-col gap-y-2">
-                      <li
-                        class={cn(
-                          'text-xs font-medium break-all hyphens-auto',
-                          section.subpostId === currentPostId
-                            ? 'text-foreground'
-                            : 'text-foreground/60',
-                        )}
-                        >
-                          <a
-                            href={
+                    {(() => {
+                      const topHeadingSlug = section.headings[0]?.slug ?? 'top'
+                      return (
+                        <ul class="flex list-none flex-col gap-y-2">
+                          <li
+                            class={cn(
+                              'text-xs font-medium break-all hyphens-auto',
                               section.subpostId === currentPostId
-                                ? '#'
-                                : `${basePath}/${section.subpostId}`
-                          }
-                            class="marker:text-foreground/30 list-none underline decoration-transparent underline-offset-[3px] transition-colors duration-200 hover:decoration-inherit break-all hyphens-auto"
-                            data-heading-link={
-                              section.subpostId === currentPostId
-                                ? 'top'
-                              : `${section.subpostId}-top`
-                          }
-                        >
-                          {section.title}
-                        </a>
-                      </li>
-                      {section.headings.map((heading) => (
-                        <li
-                          class={cn(
-                            'text-xs break-all hyphens-auto',
-                            getHeadingMargin(heading.depth),
-                            section.subpostId === currentPostId
-                              ? 'text-foreground/60'
-                              : 'text-foreground/30',
-                          )}
-                        >
-                          <a
-                            href={
-                              section.subpostId === currentPostId
-                                ? `#${heading.slug}`
-                                : `${basePath}/${section.subpostId}#${heading.slug}`
-                            }
-                            class="marker:text-foreground/30 hover:text-foreground/60 list-none underline decoration-transparent underline-offset-[3px] transition-colors duration-200 hover:decoration-inherit break-all hyphens-auto"
-                            data-heading-link={
-                              section.subpostId === currentPostId
-                                ? heading.slug
-                                : `${section.subpostId}-${heading.slug}`
-                            }
+                                ? 'text-foreground'
+                                : 'text-foreground/60',
+                            )}
                           >
-                            {heading.text}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
+                            <a
+                              href={
+                                section.subpostId === currentPostId
+                                  ? `#${topHeadingSlug}`
+                                  : `${basePath}/${section.subpostId}#${topHeadingSlug}`
+                              }
+                              class="marker:text-foreground/30 list-none underline decoration-transparent underline-offset-[3px] transition-colors duration-200 hover:decoration-inherit break-all hyphens-auto"
+                              data-heading-link={
+                                section.subpostId === currentPostId
+                                  ? topHeadingSlug
+                                  : `${section.subpostId}-${topHeadingSlug}`
+                              }
+                            >
+                              {section.title}
+                            </a>
+                          </li>
+                          {section.headings.map((heading) => (
+                            <li
+                              class={cn(
+                                'text-xs break-all hyphens-auto',
+                                getHeadingMargin(heading.depth),
+                                section.subpostId === currentPostId
+                                  ? 'text-foreground/60'
+                                  : 'text-foreground/30',
+                              )}
+                            >
+                              <a
+                                href={
+                                  section.subpostId === currentPostId
+                                    ? `#${heading.slug}`
+                                    : `${basePath}/${section.subpostId}#${heading.slug}`
+                                }
+                                class="marker:text-foreground/30 hover:text-foreground/60 list-none underline decoration-transparent underline-offset-[3px] transition-colors duration-200 hover:decoration-inherit break-all hyphens-auto"
+                                data-heading-link={
+                                  section.subpostId === currentPostId
+                                    ? heading.slug
+                                    : `${section.subpostId}-${heading.slug}`
+                                }
+                              >
+                                {heading.text}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      )
+                    })()}
                   </div>
                 )}
               </>
@@ -149,7 +154,8 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
 }
 
 <script>
-  const HEADER_OFFSET = 150
+  // Slight offset to align with content top while keeping clicks accurate
+  const HEADER_OFFSET = 64
 
   class TOCState {
     links: NodeListOf<Element> = document.querySelectorAll(
@@ -255,22 +261,32 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
 
   class TOCLinks {
     static update(headingIds: string[]) {
+      const activeId = headingIds.find(Boolean)
+      const activeClasses = [
+        'text-primary',
+        'bg-primary/10',
+        'rounded-md',
+        'shadow-sm',
+        'inline-flex',
+        'items-center',
+        'px-2',
+        'py-1',
+      ]
+
       state.links.forEach((link) => {
-        link.classList.remove('text-foreground')
+        link.classList.remove('text-foreground', 'text-primary', ...activeClasses)
       })
 
-      headingIds.forEach((id) => {
-        if (id) {
-          const activeLink = document.querySelector(
-            `#toc-sidebar-container [data-heading-link="${id}"]`,
-          )
-          if (activeLink) {
-            activeLink.classList.add('text-foreground')
-          }
+      if (activeId) {
+        const activeLink = document.querySelector(
+          `#toc-sidebar-container [data-heading-link="${activeId}"]`,
+        )
+        if (activeLink) {
+          activeLink.classList.add(...activeClasses)
         }
-      })
+      }
 
-      this.scrollToActive(headingIds)
+      this.scrollToActive(activeId ? [activeId] : [])
     }
 
     static scrollToActive(headingIds: string[]) {

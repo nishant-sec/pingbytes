@@ -98,7 +98,8 @@ const { headings } = Astro.props
 
 <script>
   const INITIAL_OVERVIEW_TEXT = 'Overview'
-  const HEADER_OFFSET = 102 + 36
+  // Slight offset to match content top while keeping clicks accurate
+  const HEADER_OFFSET = 64
   const PROGRESS_CIRCLE_RADIUS = 10
   const PROGRESS_CIRCLE_CIRCUMFERENCE = 2 * Math.PI * PROGRESS_CIRCLE_RADIUS
 
@@ -220,21 +221,35 @@ const { headings } = Astro.props
     static update(headingIds: string[]) {
       if (!state.listElement || !state.currentSectionText) return
 
+      const activeId = headingIds.find(Boolean)
+      const activeClasses = [
+        'text-primary',
+        'bg-primary/10',
+        'rounded-md',
+        'shadow-sm',
+        'inline-flex',
+        'items-center',
+        'px-2',
+        'py-1',
+      ]
+
       state.listElement.querySelectorAll('.mobile-toc-item').forEach((item) => {
         const tocItem = item as HTMLElement
         const headingId = tocItem.dataset.headingId
-        if (headingId && headingIds.includes(headingId)) {
-          tocItem.classList.add('text-foreground')
+        tocItem.classList.remove('text-foreground', 'text-primary', ...activeClasses)
+
+        if (headingId && headingId === activeId) {
+          tocItem.classList.add(...activeClasses)
         } else {
-          tocItem.classList.remove('text-foreground')
+          tocItem.classList.add('text-foreground')
         }
       })
 
-      if (headingIds.length > 0) {
-        this.scrollToActive(headingIds[0])
+      if (activeId) {
+        this.scrollToActive(activeId)
       }
 
-      this.updateCurrentSectionText(headingIds)
+      this.updateCurrentSectionText(activeId ? [activeId] : [])
     }
 
     static updateCurrentSectionText(headingIds: string[]) {
