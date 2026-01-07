@@ -40,7 +40,7 @@ merox-erudite/
 ## ✨ Features Included
 
 - ✅ Newsletter integration (Brevo)
-- ✅ Disqus comments
+- ✅ Giscus comments
 - ✅ Google Analytics & Umami support
 - ✅ SEO enhancements (FAQ & HowTo schemas)
 - ✅ Enhanced homepage
@@ -98,4 +98,3 @@ The theme is now:
 ---
 
 **Note:** This theme was developed using [Cursor](https://cursor.sh/) AI coding assistant. Full transparency is maintained in the README.
-

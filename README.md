@@ -18,7 +18,7 @@ This theme includes several enhancements and customizations:
 ### ✨ New Features
 
 - **Newsletter Integration** - Brevo (formerly Sendinblue) newsletter subscription with GDPR-compliant consent
-- **Disqus Comments** - Integrated comment system with lazy loading and view transition support
+- **Giscus Comments** - Integrated comment system with lazy loading and view transition support
 - **Google AdSense** - Built-in AdSense component with view transition support
 - **Analytics Support** - Google Analytics and Umami Analytics integration
 - **SEO Enhancements** - FAQ Schema and HowTo Schema components for better search visibility
@@ -58,7 +58,7 @@ All features from astro-erudite plus:
 - Author profiles and multi-author support
 - Project tags and categorization
 - **Newsletter subscription** (Brevo integration)
-- **Disqus comments** (optional)
+- **Giscus comments** (optional)
 - **Google AdSense** support (optional)
 - **Analytics** (Google Analytics & Umami)
 
@@ -89,8 +89,13 @@ All features from astro-erudite plus:
    PUBLIC_GOOGLE_ANALYTICS_ID=your-ga-id
    PUBLIC_UMAMI_WEBSITE_ID=your-umami-id
 
-   # Disqus
-   PUBLIC_DISQUS_SHORTNAME=your-shortname
+   # Giscus
+   PUBLIC_GISCUS_REPO=owner/repo
+   PUBLIC_GISCUS_REPO_ID=your-repo-id
+   PUBLIC_GISCUS_CATEGORY=Announcements
+   PUBLIC_GISCUS_CATEGORY_ID=your-category-id
+   # Optional Giscus theme
+   PUBLIC_GISCUS_THEME=noborder_gray
    ```
 
 5. **Start the development server:**
@@ -135,11 +140,15 @@ export const SOCIAL_LINKS: SocialLink[] = [
 3. Create a list and get the List ID
 4. Add environment variables to `.env`
 
-### Disqus Setup
+### Giscus Setup
 
-1. Create a [Disqus](https://disqus.com/) account
-2. Register your site to get a shortname
-3. Add `PUBLIC_DISQUS_SHORTNAME` to `.env`
+1. Install the Giscus GitHub App on your repo and create a discussion category for comments
+2. Set these in `.env`:
+   - `PUBLIC_GISCUS_REPO=owner/repo`
+   - `PUBLIC_GISCUS_REPO_ID=your-repo-id`
+   - `PUBLIC_GISCUS_CATEGORY=category-name`
+   - `PUBLIC_GISCUS_CATEGORY_ID=category-id`
+   - (Optional) `PUBLIC_GISCUS_THEME=noborder_gray`
 
 ### AdSense Setup
 
@@ -259,4 +268,3 @@ For comprehensive documentation, detailed feature explanations, and the original
 Built with ❤️ by [merox](https://merox.dev)
 
 *Developed using [Cursor](https://cursor.sh/) AI coding assistant*
-

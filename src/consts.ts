@@ -23,11 +23,17 @@ export const UMAMI = {
   websiteId: import.meta.env.PUBLIC_UMAMI_WEBSITE_ID || '',
 }
 
-// Disqus Comments
-// Get your shortname from https://disqus.com/admin/settings/general/
-// Set it as an environment variable: PUBLIC_DISQUS_SHORTNAME=your-shortname
-export const DISQUS = {
-  shortname: import.meta.env.PUBLIC_DISQUS_SHORTNAME || '',
+// Giscus Comments
+// Set environment variables:
+// - PUBLIC_GISCUS_REPO=owner/repo
+// - PUBLIC_GISCUS_REPO_ID=your-repo-id
+// - PUBLIC_GISCUS_CATEGORY=Discussion category name
+// - PUBLIC_GISCUS_CATEGORY_ID=Discussion category ID
+export const GISCUS = {
+  repo: import.meta.env.PUBLIC_GISCUS_REPO || '',
+  repoId: import.meta.env.PUBLIC_GISCUS_REPO_ID || '',
+  category: import.meta.env.PUBLIC_GISCUS_CATEGORY || '',
+  categoryId: import.meta.env.PUBLIC_GISCUS_CATEGORY_ID || '',
 }
 
 // Brevo Newsletter
