@@ -1,10 +1,6 @@
 ---
-import {
-  getCombinedReadingTime,
-  getSubpostCount,
-  isSubpost,
-} from '@/lib/data-utils'
-import { cn, formatDate, getTagVariant } from '@/lib/utils'
+import { getSubpostCount, isSubpost } from '@/lib/data-utils'
+import { formatDate } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
 import type { CollectionEntry } from 'astro:content'
 import { Image } from 'astro:assets'
@@ -16,7 +12,6 @@ interface Props {
 
 const { entry } = Astro.props
 const formattedDate = formatDate(entry.data.date)
-const readTime = await getCombinedReadingTime(entry.id)
 const subpostCount = !isSubpost(entry.id) ? await getSubpostCount(entry.id) : 0
 const fallbackImage = '/og-default.png'
 ---
@@ -25,17 +20,13 @@ const fallbackImage = '/og-default.png'
   href={`/${entry.collection}/${entry.id}`}
   class="group block -mx-3 px-3 py-6 rounded-xl border border-transparent shadow-none transition-all duration-300 hover:-translate-y-0.5 hover:border-border/50 hover:bg-muted/40 hover:shadow-sm sm:mx-0"
 >
-  <div class="flex flex-col gap-4 sm:flex-row sm:items-stretch">
+  <div class="flex flex-row items-start gap-4 sm:items-stretch">
     <div class="flex flex-1 flex-col gap-3">
       <div class="space-y-2">
-        <div class="flex items-start justify-between gap-4">
-          <h3 class="text-lg font-bold leading-tight text-foreground/90 transition-colors duration-300 group-hover:text-primary">
+        <div class="flex items-start justify-start">
+          <h3 class="flex-1 min-w-0 text-xl font-bold leading-tight text-foreground/90 transition-colors duration-300 group-hover:text-primary">
             {entry.data.title}
           </h3>
-          <Icon
-            name="lucide:arrow-up-right"
-            class="mt-1 size-4 shrink-0 text-muted-foreground/30 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
-          />
         </div>
 
         <p class="text-sm leading-relaxed text-muted-foreground/80 line-clamp-2">
@@ -54,9 +45,9 @@ const fallbackImage = '/og-default.png'
 
         <span class="text-muted-foreground/20" aria-hidden="true">/</span>
 
-        <span class="flex items-center gap-1.5">
-          <Icon name="lucide:clock" class="size-3" />
-          {readTime}
+        <span class="flex items-center gap-1.5" data-claps data-post-id={entry.id}>
+          <span aria-hidden="true">👏</span>
+          <span class="tabular-nums" data-claps-count>0</span>
         </span>
 
         {
@@ -70,40 +61,19 @@ const fallbackImage = '/og-default.png'
             </>
           )
         }
-
-        {
-          entry.data.tags && entry.data.tags.length > 0 && (
-            <>
-              <span class="text-muted-foreground/20" aria-hidden="true">/</span>
-              <div class="flex flex-wrap items-center gap-1.5">
-                {entry.data.tags.slice(0, 2).map((tag) => {
-                  const { className } = getTagVariant(tag)
-                  return (
-                    <span
-                      class={cn(
-                        'rounded-md bg-muted/50 px-1.5 py-0.5 text-[10px] uppercase tracking-wide transition-colors',
-                        className,
-                      )}
-                    >
-                      {tag}
-                    </span>
-                  )
-                })}
-              </div>
-            </>
-          )
-        }
       </div>
     </div>
 
-    <figure class="relative w-full overflow-hidden rounded-lg border border-border/60 bg-muted/40 sm:w-40 sm:shrink-0 md:w-48">
+    <figure
+      class="relative w-20 h-[53px] overflow-hidden rounded-lg border border-border/60 bg-muted/40 sm:w-40 sm:h-[107px] sm:shrink-0"
+    >
       {
         entry.data.image ? (
           <Image
             src={entry.data.image}
             alt={entry.data.title}
-            width={480}
-            height={320}
+            width={160}
+            height={107}
             class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
             loading="lazy"
             decoding="async"
@@ -112,8 +82,8 @@ const fallbackImage = '/og-default.png'
           <img
             src={fallbackImage}
             alt={entry.data.title}
-            width={480}
-            height={320}
+            width={160}
+            height={107}
             class="h-full w-full object-cover"
             loading="lazy"
             decoding="async"
@@ -123,3 +93,31 @@ const fallbackImage = '/og-default.png'
     </figure>
   </div>
 </Link>
+
+<script>
+  if (typeof window !== 'undefined') {
+    const loadClaps = () => {
+      const elements = document.querySelectorAll('[data-claps]')
+      elements.forEach(async (el) => {
+        const postId = el.getAttribute('data-post-id')
+        const countEl = el.querySelector('[data-claps-count]')
+        if (!postId || !countEl) return
+        try {
+          const res = await fetch(`/api/reactions/${postId}`)
+          if (!res.ok) throw new Error('Request failed')
+          const data = await res.json()
+          const count = data?.reactions?.clap ?? 0
+          countEl.textContent = count.toString()
+        } catch (error) {
+          countEl.textContent = '0'
+        }
+      })
+    }
+
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      loadClaps()
+    } else {
+      window.addEventListener('DOMContentLoaded', loadClaps, { once: true })
+    }
+  }
+</script>
