@@ -134,16 +134,54 @@ export async function getAdjacentWikiPosts(
         (post) => post.id === rootPath || post.id.startsWith(`${rootPath}/`),
       )
     : allWikiPosts
+  const postsMap = new Map(scopedPosts.map((p) => [p.id, p]))
 
-  const currentIndex = scopedPosts.findIndex((post) => post.id === currentId)
+  // Build ordered list following the wiki tree (folder index first, then children)
+  const tree = await getWikiTree(rootPath ?? '')
+  const orderedIds: string[] = []
+
+  // Always place the folder index first
+  if (rootPath) {
+    const preferredRootIds = [rootPath, `${rootPath}/index`]
+    for (const rid of preferredRootIds) {
+      if (postsMap.has(rid) && !orderedIds.includes(rid)) {
+        orderedIds.push(rid)
+        break
+      }
+    }
+  }
+
+  const flattenTree = (nodes: WikiNode[]) => {
+    for (const node of nodes) {
+      // If this node has a corresponding post (index or file), include it first
+      if (postsMap.has(node.id)) {
+        orderedIds.push(node.id)
+      }
+      if (node.children.length > 0) {
+        flattenTree(node.children)
+      }
+    }
+  }
+
+  flattenTree(tree)
+
+  // Fallback: if tree flatten missed any (shouldn't), append remaining
+  postsMap.forEach((_post, id) => {
+    if (!orderedIds.includes(id)) orderedIds.push(id)
+  })
+
+  const currentIndex = orderedIds.findIndex((id) => id === currentId)
 
   if (currentIndex === -1) {
     return { newer: null, older: null, nextSectionTitle: null }
   }
 
-  const older = currentIndex > 0 ? scopedPosts[currentIndex - 1] : null
-  const newer =
-    currentIndex < scopedPosts.length - 1 ? scopedPosts[currentIndex + 1] : null
+  const olderId = currentIndex > 0 ? orderedIds[currentIndex - 1] : null
+  const newerId =
+    currentIndex < orderedIds.length - 1 ? orderedIds[currentIndex + 1] : null
+
+  const older = olderId ? postsMap.get(olderId) ?? null : null
+  const newer = newerId ? postsMap.get(newerId) ?? null : null
 
   const currentRoot = currentId.split('/')[0] ?? ''
   const nextRoot = newer ? newer.id.split('/')[0] ?? '' : ''

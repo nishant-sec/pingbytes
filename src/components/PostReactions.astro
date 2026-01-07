@@ -1,5 +1,6 @@
 ---
 import { cn } from '@/lib/utils'
+import { Icon } from 'astro-icon/components'
 
 const { postId, className } = Astro.props
 ---
@@ -13,13 +14,82 @@ const { postId, className } = Astro.props
       type="button"
       data-reaction="clap"
       data-post-id={postId}
-      class="group relative flex items-center gap-2 rounded-full bg-muted/60 px-4 py-2 text-sm transition-all hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
+      class="group relative flex items-center gap-1.5 rounded-full bg-muted/60 px-3 py-2 text-sm transition-all hover:bg-muted focus:outline-none focus:ring-0 focus:ring-offset-0 border border-transparent disabled:opacity-60 disabled:cursor-not-allowed"
       aria-label="React with clap"
       title="Clap"
     >
       <span class="text-lg leading-none" aria-hidden="true">👏</span>
       <span class="text-xs font-semibold text-foreground" data-count="clap-count">0</span>
     </button>
+
+    <div class="relative" data-share-container>
+      <button
+        type="button"
+        data-share="post"
+        class="group flex items-center justify-center gap-2 rounded-full bg-muted/60 px-3 py-2 text-sm transition-all hover:bg-muted focus:outline-none focus:ring-0 focus:ring-offset-0 border border-transparent"
+        aria-label="Share this post"
+        title="Share"
+        aria-expanded="false"
+        aria-haspopup="true"
+      >
+        <Icon name="lucide:share-2" class="size-4 text-foreground transition-transform group-hover:scale-110" aria-hidden="true" />
+      </button>
+      <div
+        data-share-menu
+        class="absolute left-0 top-full mt-2 hidden rounded-lg border border-border bg-background p-2 shadow-lg min-w-[180px] z-30"
+      >
+        <div class="flex flex-wrap gap-2">
+          <a
+            data-share-target="twitter"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold text-foreground transition-colors hover:bg-muted"
+          >
+            <Icon name="simple-icons:x" class="size-4" aria-hidden="true" />
+            <span class="sr-only">Share on X</span>
+          </a>
+          <a
+            data-share-target="linkedin"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold text-foreground transition-colors hover:bg-muted"
+          >
+            <Icon name="simple-icons:linkedin" class="size-4" aria-hidden="true" />
+            <span class="sr-only">Share on LinkedIn</span>
+          </a>
+          <a
+            data-share-target="reddit"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold text-foreground transition-colors hover:bg-muted"
+          >
+            <Icon name="simple-icons:reddit" class="size-4" aria-hidden="true" />
+            <span class="sr-only">Share on Reddit</span>
+          </a>
+          <a
+            data-share-target="facebook"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold text-foreground transition-colors hover:bg-muted"
+          >
+            <Icon name="simple-icons:facebook" class="size-4" aria-hidden="true" />
+            <span class="sr-only">Share on Facebook</span>
+          </a>
+          <button
+            type="button"
+            data-share-copy
+            class="relative flex items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold text-foreground transition-colors hover:bg-muted"
+          >
+            <Icon name="lucide:link" class="size-4" aria-hidden="true" />
+            <span class="sr-only" data-share-copy-label>Copy</span>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -31,6 +101,8 @@ const { postId, className } = Astro.props
     const API_BASE = '/api/reactions'
 
     let reactionButtons = []
+    let shareContainers = []
+    let openShareContainer = null
     let timeoutId = null
     let scaleTimeoutIds = new Map()
     const processingButtons = new Set()
@@ -94,7 +166,10 @@ const { postId, className } = Astro.props
     const getReactionCount = (reactionKey) => serverReactions[reactionKey] || 0
 
     const incrementReaction = async (postId, reactionKey) => {
-      if (hasUserReacted(postId)) return null
+      if (hasUserReacted(postId)) {
+        return { count: null, rateLimited: false }
+      }
+
       try {
         const response = await fetch(`${API_BASE}/${postId}`, {
           method: 'POST',
@@ -102,19 +177,41 @@ const { postId, className } = Astro.props
           body: JSON.stringify({ reactionKey }),
         })
 
-        if (!response.ok) {
-          console.error('Failed to update reaction:', response.statusText)
-          return null
+        let data = {}
+        try {
+          data = await response.json()
+        } catch (err) {
+          console.warn('Failed to parse reaction response', err)
         }
 
-        const data = await response.json()
+        if (response.status === 429) {
+          // Rate limited by server (IP-based)
+          if (data.reactions) {
+            serverReactions = data.reactions
+          }
+          return {
+            count: data.count ?? getReactionCount(reactionKey),
+            rateLimited: true,
+            message:
+              data.error || 'Rate limit exceeded. Please try again later.',
+          }
+        }
+
+        if (!response.ok) {
+          console.error('Failed to update reaction:', response.statusText)
+          return { count: null, rateLimited: false }
+        }
+
         serverReactions = data.reactions ?? {}
         markUserReacted(postId, reactionKey)
 
-        return data.count ?? serverReactions[reactionKey] ?? 0
+        return {
+          count: data.count ?? serverReactions[reactionKey] ?? 0,
+          rateLimited: false,
+        }
       } catch (error) {
         console.error('Error updating reaction:', error)
-        return null
+        return { count: null, rateLimited: false }
       }
     }
 
@@ -187,9 +284,31 @@ const { postId, className } = Astro.props
       processingButtons.add(button)
       button.disabled = true
 
-      const newCount = await incrementReaction(postId, reactionKey)
-      if (newCount !== null) {
-        updateReactionDisplay(button, newCount, true)
+      const result = await incrementReaction(postId, reactionKey)
+
+      if (result?.rateLimited) {
+        // Server rate limit hit - disable and show latest count
+        const count = result.count ?? getReactionCount(reactionKey)
+        updateReactionDisplay(button, count, true)
+        const message =
+          result.message || 'Rate limit exceeded. Please try again later.'
+        button.title = message
+        button.setAttribute(
+          'aria-label',
+          (button.getAttribute('aria-label') || '') + ' (rate limited)',
+        )
+
+        // Disable all reactions for this post to avoid more 429s
+        reactionButtons.forEach((otherButton) => {
+          const otherPostId = otherButton.dataset.postId
+          if (otherPostId === postId) {
+            otherButton.disabled = true
+            otherButton.classList.add('opacity-60', 'cursor-not-allowed')
+            otherButton.classList.remove('hover:bg-muted')
+          }
+        })
+      } else if (result && result.count !== null) {
+        updateReactionDisplay(button, result.count, true)
 
         reactionButtons.forEach((otherButton) => {
           const otherPostId = otherButton.dataset.postId
@@ -257,6 +376,16 @@ const { postId, className } = Astro.props
         button.removeEventListener('click', handleReactionClick)
       })
       reactionButtons = []
+
+      shareContainers.forEach((container) => {
+        const button = container.querySelector('button[data-share="post"]')
+        if (button) {
+          button.removeEventListener('click', handleShareClick)
+        }
+      })
+      document.removeEventListener('click', handleOutsideShareClick)
+      shareContainers = []
+      openShareContainer = null
     }
 
     if (document.readyState === 'loading') {
@@ -267,9 +396,153 @@ const { postId, className } = Astro.props
 
     document.addEventListener('astro:page-load', () => {
       cleanup()
-      timeoutId = setTimeout(initReactions, 0)
+      timeoutId = setTimeout(() => {
+        initReactions()
+        initShare()
+      }, 0)
     })
 
     document.addEventListener('astro:before-swap', cleanup)
+
+    async function handleShareClick(e) {
+      e.preventDefault()
+      const container = (e.currentTarget as HTMLElement)?.closest(
+        '[data-share-container]',
+      )
+      if (!container) return
+
+      const menu = container.querySelector('[data-share-menu]')
+      const button = container.querySelector('button[data-share="post"]')
+      if (!menu || !button) return
+
+      const isOpen = openShareContainer === container
+      if (isOpen) {
+        closeShareMenu()
+        return
+      }
+
+      populateShareLinks(container)
+      menu.classList.remove('hidden')
+      button.setAttribute('aria-expanded', 'true')
+      openShareContainer = container
+      setTimeout(() => {
+        document.addEventListener('click', handleOutsideShareClick)
+      }, 0)
+    }
+
+    function handleOutsideShareClick(e) {
+      if (!openShareContainer) return
+      const target = e.target
+      if (
+        openShareContainer.contains(target as Node)
+      ) {
+        return
+      }
+      closeShareMenu()
+    }
+
+    function closeShareMenu() {
+      if (openShareContainer) {
+        const menu = openShareContainer.querySelector('[data-share-menu]')
+        const button = openShareContainer.querySelector('button[data-share="post"]')
+        if (menu) menu.classList.add('hidden')
+        if (button) button.setAttribute('aria-expanded', 'false')
+      }
+      openShareContainer = null
+      document.removeEventListener('click', handleOutsideShareClick)
+    }
+
+    function populateShareLinks(container) {
+      const url = window.location.href
+      const title = document.title || 'Check this out'
+      const encodedUrl = encodeURIComponent(url)
+      const encodedTitle = encodeURIComponent(title)
+
+      const linkMap = {
+        twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
+        linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+        reddit: `https://reddit.com/submit?url=${encodedUrl}&title=${encodedTitle}`,
+        facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+      }
+
+      Object.entries(linkMap).forEach(([key, href]) => {
+        const anchor = container.querySelector(
+          `[data-share-target="${key}"]`,
+        ) as HTMLAnchorElement | null
+        if (anchor) {
+          anchor.href = href
+        }
+      })
+
+      const copyBtn = container.querySelector(
+        '[data-share-copy]',
+      ) as HTMLButtonElement | null
+      if (copyBtn) {
+        const originalLabel = copyBtn.getAttribute('aria-label') || 'Copy link'
+        const labelEl = copyBtn.querySelector('[data-share-copy-label]') as HTMLElement | null
+        copyBtn.onclick = async (evt) => {
+          evt.preventDefault()
+          try {
+            await navigator.clipboard.writeText(url)
+            copyBtn.classList.add('text-green-600', 'dark:text-green-400')
+            copyBtn.setAttribute('aria-label', 'Link copied')
+            copyBtn.title = 'Link copied'
+            // Temporary tooltip
+            const existingToast = copyBtn.querySelector('[data-share-copy-toast]')
+            if (existingToast && existingToast.parentNode) {
+              existingToast.parentNode.removeChild(existingToast)
+            }
+            const toast = document.createElement('span')
+            toast.dataset.shareCopyToast = 'true'
+            toast.textContent = 'Copied'
+            toast.className =
+              'absolute left-1/2 -translate-x-1/2 -top-6 text-[10px] font-semibold text-foreground bg-background border border-border rounded-full px-2 py-0.5 shadow-sm'
+            copyBtn.appendChild(toast)
+            setTimeout(() => {
+              copyBtn.classList.remove('text-green-600', 'dark:text-green-400')
+              copyBtn.setAttribute('aria-label', originalLabel)
+              copyBtn.title = originalLabel
+              if (toast.parentNode) {
+                toast.parentNode.removeChild(toast)
+              }
+            }, 1500)
+          } catch (err) {
+            console.error('Failed to copy link:', err)
+          } finally {
+            closeShareMenu()
+          }
+        }
+      }
+    }
+
+    function initShare() {
+      shareContainers = Array.from(
+        document.querySelectorAll('[data-share-container]'),
+      )
+      shareContainers.forEach((container) => {
+        const button = container.querySelector('button[data-share="post"]')
+        if (button) {
+          button.addEventListener('click', handleShareClick)
+        }
+      })
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initShare)
+    } else {
+      initShare()
+    }
+
+    document.addEventListener('astro:before-swap', () => {
+      closeShareMenu()
+      shareContainers.forEach((container) => {
+        const button = container.querySelector('button[data-share="post"]')
+        if (button) {
+          button.removeEventListener('click', handleShareClick)
+        }
+      })
+      shareContainers = []
+      openShareContainer = null
+    })
   })()
 </script>

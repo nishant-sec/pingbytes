@@ -367,6 +367,10 @@
     @apply bg-transparent;
   }
 
+  body {
+    @apply overflow-x-hidden;
+  }
+
   .disable-transitions * {
     @apply transition-none!;
   }

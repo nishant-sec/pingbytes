@@ -188,20 +188,22 @@ const experience = [
     </div>
   </section>
 
-  <section class="mt-12 pt-12 md:mt-16 md:pt-16 border-t border-border/50">
-    <div class="flex flex-col md:flex-row gap-8 md:gap-16">
-      <div class="md:w-1/4">
-        <h2 class="text-2xl font-black tracking-tighter uppercase leading-none text-foreground md:sticky md:top-24">
-          Stack &<br /><span class="text-primary">Skills</span>.
-        </h2>
+    <section class="mt-16 pt-16 md:mt-24 md:pt-24 border-t border-border/50">
+      <div class="flex flex-col md:flex-row gap-8 md:gap-16">
+        <div class="md:w-1/4 space-y-6">
+          <div class="space-y-2 md:sticky md:top-24">
+            <h2 class="text-3xl font-black tracking-tighter uppercase leading-none text-foreground">
+              Stack &<br /><span class="text-primary">Skills</span>.
+            </h2>
+          </div>
+        </div>
+        <div class="flex-1 overflow-hidden">
+          <ErrorBoundary client:load transition:persist="skills-error-boundary">
+            <Skills client:load transition:persist="skills-section" />
+          </ErrorBoundary>
+        </div>
       </div>
-      <div class="flex-1 overflow-hidden">
-        <ErrorBoundary client:load transition:persist="skills-error-boundary">
-          <Skills client:load transition:persist="skills-section" />
-        </ErrorBoundary>
-      </div>
-    </div>
-  </section>
+    </section>
 
   {latestPosts && latestPosts.length > 0 && (
     <section class="mt-16 pt-16 md:mt-24 md:pt-24 border-t border-border/50">

@@ -277,13 +277,6 @@ try {
         <PostReactions postId={currentPostId} className="w-full sm:w-auto" />
       </div>
 
-      <SocialShare
-        title={post.data.title}
-        url={new URL(`/blog/${currentPostId}`, SITE.href).href}
-        description={post.data.description}
-        className="w-full"
-      />
-
       <PostNavigation
         newerPost={navigation.newer}
         olderPost={navigation.older}
