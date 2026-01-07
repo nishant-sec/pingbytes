@@ -14,11 +14,9 @@ interface Env {
   }
 }
 
-interface ReactionData {
-  [reactionKey: string]: number
-}
-
 const VALID_REACTIONS = ['clap'] as const
+type ReactionKey = (typeof VALID_REACTIONS)[number]
+type ReactionData = Partial<Record<ReactionKey, number>>
 const RATE_LIMIT_WINDOW_SECONDS = 60 * 60 * 12 // 12 hours
 const RATE_LIMIT_MAX_ACTIONS = 1 // per IP per post per window
 
@@ -27,6 +25,9 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 }
+
+const isValidReactionKey = (value: unknown): value is ReactionKey =>
+  typeof value === 'string' && VALID_REACTIONS.includes(value as ReactionKey)
 
 const jsonResponse = (
   body: Record<string, unknown>,
@@ -106,17 +107,13 @@ export const onRequestPost = async ({
   try {
     const { postId } = params
     const body = await request.json()
-    const { reactionKey } = body
+    const reactionKey = body?.reactionKey
 
     if (!postId) {
       return jsonResponse({ error: 'Post ID is required' }, 400)
     }
 
-    if (!reactionKey || typeof reactionKey !== 'string') {
-      return jsonResponse({ error: 'Reaction key is required' }, 400)
-    }
-
-    if (!VALID_REACTIONS.includes(reactionKey)) {
+    if (!isValidReactionKey(reactionKey)) {
       return jsonResponse({ error: 'Invalid reaction key' }, 400)
     }
 
