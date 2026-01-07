@@ -136,15 +136,21 @@ const shareScope = `share-${Math.random().toString(36).substring(2, 9)}`
   import { registerPageController } from '@/lib/client/lifecycle'
   import { registerCopyButtons } from '@/lib/client/share'
 
-  const shareScope = {JSON.stringify(shareScope)}
+  const getShareScope = () => {
+    const el = document.querySelector('[data-share-scope]')
+    return el?.getAttribute('data-share-scope') || ''
+  }
+
   let cleanup = () => {}
 
   registerPageController({
     init: () => {
       cleanup()
-      cleanup = registerCopyButtons({
-        selector: `button[data-share-url][data-share-scope="${shareScope}"]`,
-      })
+      const scope = getShareScope()
+      const selector = scope
+        ? `button[data-share-url][data-share-scope="${scope}"]`
+        : 'button[data-share-url]'
+      cleanup = registerCopyButtons({ selector })
     },
     cleanup: () => cleanup(),
   })
