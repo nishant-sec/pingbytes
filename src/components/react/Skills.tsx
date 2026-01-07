@@ -87,7 +87,7 @@ const Skills: React.FC = () => {
 
   return (
     <div className="z-30 flex w-full flex-col mx-auto lg:max-w-full">
-      <div className="space-y-2">
+      <div className="space-y-4">
         {categoryGroups.map((group, groupIndex) => (
           <InfiniteScroll
             key={groupIndex}
@@ -103,13 +103,11 @@ const Skills: React.FC = () => {
                   return (
                     <div
                       key={`${category}-${techIndex}`}
-                      className="tech-badge repo-card border-border bg-card text-muted-foreground mr-5 flex items-center gap-3 rounded-full border p-3 shadow-sm backdrop-blur-sm transition-all duration-300 hover:shadow-md"
+                      className="tech-badge repo-card border-border bg-muted/70 text-foreground mr-5 flex items-center gap-2.5 rounded-full border p-2.5 shadow-sm backdrop-blur-sm transition-all duration-300 hover:shadow-md"
                       data-tech-name={`${category}-${techIndex}`}
                     >
-                      <span className="bg-muted flex h-10 w-10 items-center justify-center rounded-full p-2 text-lg shadow-inner">
-                        <IconComponent className="tech-icon text-primary" />
-                      </span>
-                      <span className="text-foreground font-medium">
+                      <IconComponent className="tech-icon text-primary" size="1em" />
+                      <span className="text-xs sm:text-sm font-medium leading-tight">
                         {tech.text}
                       </span>
                     </div>

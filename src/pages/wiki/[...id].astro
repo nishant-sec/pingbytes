@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button'
 import Layout from '@/layouts/Layout.astro'
 import { getAllWikiPosts, parseAuthors, getWikiTree, setActiveFlags, getAdjacentWikiPosts } from '@/lib/data-utils'
 import { Icon } from 'astro-icon/components'
-import { Image } from 'astro:assets'
+import SmartImage from '@/components/SmartImage.astro'
 import { render } from 'astro:content'
 import type { CollectionEntry } from 'astro:content'
 
@@ -109,12 +109,16 @@ const nextNavLabel = navigation.nextSectionTitle
     </div>
     <div class="col-start-2 flex flex-col gap-6">
       {post.data.image && (
-        <Image
+        <SmartImage
           src={post.data.image}
           alt={post.data.title}
           width={1200}
           height={630}
           class="w-full rounded-lg object-cover"
+          sizes="(min-width: 1280px) 1200px, (min-width: 1024px) 1000px, 100vw"
+          loading="eager"
+          decoding="async"
+          fallbackSrc="/og-default.png"
         />
       )}
     </div>
@@ -150,7 +154,17 @@ const nextNavLabel = navigation.nextSectionTitle
               <div class="flex items-center gap-x-2 py-1 sm:px-2">
                 {authors.map((author) => (
                   <div class="flex items-center gap-x-1.5">
-                    <Image src={author.avatar} alt={author.name} width={20} height={20} class="rounded-full" />
+                    <SmartImage
+                      src={author.avatar}
+                      alt={author.name}
+                      width={20}
+                      height={20}
+                      class="rounded-full"
+                      loading="lazy"
+                      decoding="async"
+                      sizes="20px"
+                      fallbackSrc="/og-default.png"
+                    />
                     <span>{author.name}</span>
                   </div>
                 ))}

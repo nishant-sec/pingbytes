@@ -7,6 +7,8 @@ interface Props {
   external?: boolean
   class?: string
   underline?: boolean
+  // Control Astro's built-in prefetch behavior. Leave undefined for default; set to "off" to disable.
+  prefetch?: 'off' | 'hover' | 'viewport'
   'aria-label'?: string
   'data-testid'?: string
   'data-astro-reload'?: boolean
@@ -20,7 +22,7 @@ interface Props {
   type?: string
 }
 
-const { href, external, class: className, underline, ...rest } = Astro.props
+const { href, external, class: className, underline, prefetch, ...rest } = Astro.props
 
 const isExternal = external || href.startsWith('http')
 ---
@@ -38,6 +40,7 @@ const isExternal = external || href.startsWith('http')
   {...rest}
   data-internal-link={!isExternal ? 'true' : undefined}
   data-astro-reload={Astro.props['data-astro-reload'] ? '' : undefined}
+  data-astro-prefetch={prefetch === 'off' ? 'false' : prefetch}
 >
   <slot />
 </a>

@@ -1,14 +1,13 @@
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
-import Disqus from '@/components/Disqus.astro'
 import Link from '@/components/Link.astro'
 import PostHead from '@/components/PostHead.astro'
-import PostReactions from '@/components/PostReactions.astro'
 import PostNavigation from '@/components/PostNavigation.astro'
 import RelatedPosts from '@/components/RelatedPosts.astro'
 import SubpostsHeader from '@/components/SubpostsHeader.astro'
 import SubpostsSidebar from '@/components/SubpostsSidebar.astro'
 import SocialShare from '@/components/SocialShare.astro'
+import Giscus from '@/components/Giscus.astro'
 import TOCHeader from '@/components/TOCHeader.astro'
 import TOCSidebar from '@/components/TOCSidebar.astro'
 import { Button } from '@/components/ui/button'
@@ -29,7 +28,7 @@ import {
 } from '@/lib/data-utils'
 import { formatDate } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
-import { Image } from 'astro:assets'
+import SmartImage from '@/components/SmartImage.astro'
 import { render } from 'astro:content'
 
 export async function getStaticPaths() {
@@ -149,12 +148,16 @@ try {
 
     {
       post.data.image && (
-        <Image
+        <SmartImage
           src={post.data.image}
           alt={post.data.title}
           width={1200}
           height={630}
           class="col-span-full mx-auto w-full max-w-5xl object-cover"
+          sizes="(min-width: 1280px) 1200px, (min-width: 1024px) 1000px, 100vw"
+          loading="eager"
+          decoding="async"
+          fallbackSrc="/og-default.png"
         />
       )
     }
@@ -199,12 +202,16 @@ try {
               <div class="flex items-center gap-x-2">
                 {authors.map((author) => (
                   <div class="flex items-center gap-x-1.5">
-                    <Image
+                    <SmartImage
                       src={author.avatar}
                       alt={author.name}
                       width={20}
                       height={20}
                       class="rounded-full"
+                      loading="lazy"
+                      decoding="async"
+                      sizes="20px"
+                      fallbackSrc="/og-default.png"
                     />
                     {author.isRegistered ? (
                       <Link
@@ -250,9 +257,6 @@ try {
           }
         </div>
 
-        <div class="flex flex-wrap justify-start gap-3">
-          <PostReactions postId={currentPostId} className="w-full sm:w-auto" />
-        </div>
       </div>
 
       <article class="prose max-w-none">
@@ -265,10 +269,6 @@ try {
         aria-hidden="true"
       />
 
-      <div class="flex flex-col gap-4">
-        <PostReactions postId={currentPostId} className="w-full sm:w-auto" />
-      </div>
-
       <PostNavigation
         newerPost={navigation.newer}
         olderPost={navigation.older}
@@ -280,8 +280,8 @@ try {
       {
         /* Only show comments on main posts, not subposts */
         !isCurrentSubpost && (
-          <div class="mt-4">
-            <Disqus
+          <div class="mt-8">
+            <Giscus
               identifier={`blog-${currentPostId}`}
               title={post.data.title}
               url={new URL(`/blog/${currentPostId}`, SITE.href).href}
@@ -289,6 +289,7 @@ try {
           </div>
         )
       }
+
     </div>
   </section>
 

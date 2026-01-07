@@ -3,6 +3,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn, getHeadingMargin } from '@/lib/utils'
 import type { MarkdownHeading } from 'astro'
 import { Icon } from 'astro-icon/components'
+import { registerPageController } from '@/lib/client/lifecycle'
 
 type Props = {
   headings: MarkdownHeading[]
@@ -405,12 +406,8 @@ const { headings } = Astro.props
     }
   }
 
-  document.addEventListener('astro:page-load', () => MobileTOCController.init())
-  document.addEventListener('astro:after-swap', () => {
-    MobileTOCController.cleanup()
-    MobileTOCController.init()
+  registerPageController({
+    init: () => MobileTOCController.init(),
+    cleanup: () => MobileTOCController.cleanup(),
   })
-  document.addEventListener('astro:before-swap', () =>
-    MobileTOCController.cleanup(),
-  )
 </script>

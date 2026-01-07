@@ -3,6 +3,7 @@ import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import PageHead from '@/components/PageHead.astro'
 import Link from '@/components/Link.astro'
 import Layout from '@/layouts/Layout.astro'
+import SmartImage from '@/components/SmartImage.astro'
 import { Icon } from 'astro-icon/components'
 import { SITE } from '@/consts'
 
@@ -54,13 +55,16 @@ const personSchema = {
     <div class="flex flex-col md:flex-row gap-8 items-start">
       <div class="relative shrink-0">
         <div class="size-32 md:size-40 rounded-2xl overflow-hidden border border-border shadow-sm">
-          <img
+          <SmartImage
             src="/robert.webp"
             alt="Robert Melcher"
-            width="1492"
-            height="1864"
+            width={1492}
+            height={1864}
             class="object-cover w-full h-full transition-transform duration-500 hover:scale-105"
             loading="eager"
+            decoding="async"
+            sizes="(min-width: 768px) 160px, 128px"
+            fallbackSrc="/robert.webp"
           />
         </div>
       </div>

@@ -3,8 +3,8 @@ import { getSubpostCount, isSubpost } from '@/lib/data-utils'
 import { formatDate } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
 import type { CollectionEntry } from 'astro:content'
-import { Image } from 'astro:assets'
 import Link from './Link.astro'
+import SmartImage from './SmartImage.astro'
 
 interface Props {
   entry: CollectionEntry<'blog'>
@@ -43,13 +43,6 @@ const fallbackImage = '/og-default.png'
           {formattedDate}
         </time>
 
-        <span class="text-muted-foreground/20" aria-hidden="true">/</span>
-
-        <span class="flex items-center gap-1.5" data-claps data-post-id={entry.id}>
-          <span aria-hidden="true">👏</span>
-          <span class="tabular-nums" data-claps-count>0</span>
-        </span>
-
         {
           subpostCount > 0 && (
             <>
@@ -64,60 +57,18 @@ const fallbackImage = '/og-default.png'
       </div>
     </div>
 
-    <figure
-      class="relative w-20 h-[53px] overflow-hidden rounded-lg border border-border/60 bg-muted/40 sm:w-40 sm:h-[107px] sm:shrink-0"
-    >
-      {
-        entry.data.image ? (
-          <Image
-            src={entry.data.image}
-            alt={entry.data.title}
-            width={160}
-            height={107}
-            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-            loading="lazy"
-            decoding="async"
-          />
-        ) : (
-          <img
-            src={fallbackImage}
-            alt={entry.data.title}
-            width={160}
-            height={107}
-            class="h-full w-full object-cover"
-            loading="lazy"
-            decoding="async"
-          />
-        )
-      }
+    <figure class="relative w-20 h-[53px] overflow-hidden rounded-lg border border-border/60 bg-muted/40 sm:w-40 sm:h-[107px] sm:shrink-0">
+      <SmartImage
+        src={entry.data.image}
+        alt={entry.data.title}
+        width={160}
+        height={107}
+        sizes="(max-width: 640px) 80px, 160px"
+        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+        loading="lazy"
+        decoding="async"
+        fallbackSrc={fallbackImage}
+      />
     </figure>
   </div>
 </Link>
-
-<script>
-  if (typeof window !== 'undefined') {
-    const loadClaps = () => {
-      const elements = document.querySelectorAll('[data-claps]')
-      elements.forEach(async (el) => {
-        const postId = el.getAttribute('data-post-id')
-        const countEl = el.querySelector('[data-claps-count]')
-        if (!postId || !countEl) return
-        try {
-          const res = await fetch(`/api/reactions/${postId}`)
-          if (!res.ok) throw new Error('Request failed')
-          const data = await res.json()
-          const count = data?.reactions?.clap ?? 0
-          countEl.textContent = count.toString()
-        } catch (error) {
-          countEl.textContent = '0'
-        }
-      })
-    }
-
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-      loadClaps()
-    } else {
-      window.addEventListener('DOMContentLoaded', loadClaps, { once: true })
-    }
-  }
-</script>

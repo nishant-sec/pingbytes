@@ -1,0 +1,54 @@
+---
+import type { ImageMetadata } from 'astro'
+import { Image } from 'astro:assets'
+
+interface Props {
+  src?: ImageMetadata | string
+  alt: string
+  width: number
+  height: number
+  class?: string
+  sizes?: string
+  loading?: 'lazy' | 'eager'
+  decoding?: 'async' | 'auto' | 'sync'
+  fallbackSrc?: string
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  class: className,
+  sizes,
+  loading = 'lazy',
+  decoding = 'async',
+  fallbackSrc = '/og-default.png',
+} = Astro.props
+
+const canUseAstroImage = src && typeof src === 'object' && 'src' in src
+const imgSrc = src ?? fallbackSrc
+---
+
+{canUseAstroImage ? (
+  <Image
+    src={imgSrc as ImageMetadata}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={loading}
+    decoding={decoding}
+    sizes={sizes}
+    class={className}
+  />
+) : (
+  <img
+    src={imgSrc as string}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={loading}
+    decoding={decoding}
+    class={className}
+  />
+)}

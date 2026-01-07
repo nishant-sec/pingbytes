@@ -70,6 +70,8 @@ export default defineConfig({
     sitemap(),
     icon(),
   ],
+  // Use Astro's built-in link prefetching to speed up navigation
+  prefetch: true,
   vite: {
     // Type assertion needed due to Vite plugin type incompatibility between Astro and @tailwindcss/vite
     // This is the recommended approach per Astro documentation for Vite plugins

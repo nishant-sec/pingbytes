@@ -19,7 +19,6 @@ This theme includes several enhancements and customizations:
 
 - **Newsletter Integration** - Brevo (formerly Sendinblue) newsletter subscription with GDPR-compliant consent
 - **Giscus Comments** - Integrated comment system with lazy loading and view transition support
-- **Google AdSense** - Built-in AdSense component with view transition support
 - **Analytics Support** - Google Analytics and Umami Analytics integration
 - **SEO Enhancements** - FAQ Schema and HowTo Schema components for better search visibility
 - **Enhanced Homepage** - Custom hero section with experience timeline and skills showcase
@@ -59,7 +58,6 @@ All features from astro-erudite plus:
 - Project tags and categorization
 - **Newsletter subscription** (Brevo integration)
 - **Giscus comments** (optional)
-- **Google AdSense** support (optional)
 - **Analytics** (Google Analytics & Umami)
 
 ## 🚀 Getting Started
@@ -149,12 +147,6 @@ export const SOCIAL_LINKS: SocialLink[] = [
    - `PUBLIC_GISCUS_CATEGORY=category-name`
    - `PUBLIC_GISCUS_CATEGORY_ID=category-id`
    - (Optional) `PUBLIC_GISCUS_THEME=noborder_gray`
-
-### AdSense Setup
-
-1. Edit `src/components/AdSense.astro`
-2. Replace `ca-pub-XXXXX` with your AdSense publisher ID
-3. Replace `data-ad-slot` with your ad slot ID
 
 ## 📝 Adding Content
 

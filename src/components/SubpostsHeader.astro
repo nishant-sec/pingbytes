@@ -9,6 +9,7 @@ import {
   getSubpostsForParent,
   isSubpost,
 } from '@/lib/data-utils'
+import { registerPageController } from '@/lib/client/lifecycle'
 import { Icon } from 'astro-icon/components'
 
 const { parentId } = Astro.props
@@ -303,12 +304,8 @@ const currentSubpostDetails = isCurrentSubpost
     }
   }
 
-  document.addEventListener('astro:page-load', () => SubpostsController.init())
-  document.addEventListener('astro:after-swap', () => {
-    SubpostsController.cleanup()
-    SubpostsController.init()
+  registerPageController({
+    init: () => SubpostsController.init(),
+    cleanup: () => SubpostsController.cleanup(),
   })
-  document.addEventListener('astro:before-swap', () =>
-    SubpostsController.cleanup(),
-  )
 </script>
