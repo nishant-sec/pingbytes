@@ -62,8 +62,8 @@ export const SOCIAL_LINKS: SocialLink[] = [
     label: 'GitHub',
   },
   {
-    href: 'https://twitter.com/username',
-    label: 'Twitter',
+    href: 'https://www.linkedin.com/in/username',
+    label: 'LinkedIn',
   },
   {
     href: 'mailto:your@email.com',

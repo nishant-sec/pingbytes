@@ -6,10 +6,15 @@ import SocialIcons from './SocialIcons.astro'
 <footer class="bg-background/80 border-t border-border/50 backdrop-blur-md">
   <div class="w-full px-4 sm:px-6 py-4">
     <div class="max-w-3xl mx-auto flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div class="text-sm text-muted-foreground text-center sm:text-left">
+      <div class="text-sm text-muted-foreground text-center sm:text-left sm:order-1">
         &copy; 2026 PingBytes. All rights reserved.
       </div>
-      <div class="flex justify-center sm:justify-end">
+      <div class="flex items-center justify-center gap-2 text-sm text-muted-foreground sm:order-2">
+        <a href="/terms" class="hover:text-foreground transition-colors">Terms of Service</a>
+        <span aria-hidden="true" class="text-border">|</span>
+        <a href="/privacy" class="hover:text-foreground transition-colors">Privacy Policy</a>
+      </div>
+      <div class="flex justify-center sm:justify-end sm:order-3">
         <SocialIcons links={SOCIAL_LINKS} />
       </div>
     </div>
