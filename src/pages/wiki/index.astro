@@ -4,6 +4,7 @@ import PageHead from '@/components/PageHead.astro'
 import Layout from '@/layouts/Layout.astro'
 import Link from '@/components/Link.astro'
 import { Icon } from 'astro-icon/components'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { getAllWikiPosts, getWikiTree } from '@/lib/data-utils'
 
 const pageUrl = new URL(Astro.url.pathname, Astro.site).href
@@ -40,6 +41,17 @@ const categories = Array.from(
       'Linux',
       'Windows',
       'Cloud',
+      'Kubernetes',
+      'Containers',
+      'Monitoring',
+      'Observability',
+      'SRE',
+      'CI/CD',
+      'Databases',
+      'Identity',
+      'Compliance',
+      'Performance',
+      'Storage',
     ],
   ),
 )
@@ -85,34 +97,36 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
             </span>
           </div>
         </summary>
-        <div class="mx-auto flex w-full max-w-3xl flex-col gap-2 px-4 pb-4">
-          <div class="js-category-pills relative flex flex-wrap items-center gap-2 pt-1 text-[12px]">
-            <button
-              class="rounded-full border border-border bg-muted/60 px-3 py-1 font-semibold text-foreground/80 transition-colors hover:bg-muted"
-              data-filter="all"
-            >
-              All
-            </button>
-            {categories.map((cat, index) => (
-              <button
-                class={`rounded-full border border-border bg-muted/60 px-3 py-1 font-semibold text-foreground/80 transition-colors hover:bg-muted ${index >= MAX_VISIBLE_CATEGORIES ? 'hidden' : ''}`}
-                data-filter={cat}
-                data-hidden={index >= MAX_VISIBLE_CATEGORIES ? 'true' : 'false'}
-              >
-                {cat}
-              </button>
-            ))}
-            {hiddenRootCount > 0 && (
+        <ScrollArea client:visible className="mx-auto max-w-3xl" data-categories-scroll>
+          <div class="max-h-[30vh] px-4 pb-4">
+            <div class="js-category-pills relative flex flex-wrap items-center gap-2 pt-1 text-[12px]">
               <button
                 class="rounded-full border border-border bg-muted/60 px-3 py-1 font-semibold text-foreground/80 transition-colors hover:bg-muted"
-                data-more-button="true"
-                aria-expanded="false"
+                data-filter="all"
               >
-                + {hiddenRootCount} more
+                All
               </button>
-            )}
+              {categories.map((cat, index) => (
+                <button
+                  class={`rounded-full border border-border bg-muted/60 px-3 py-1 font-semibold text-foreground/80 transition-colors hover:bg-muted ${index >= MAX_VISIBLE_CATEGORIES ? 'hidden' : ''}`}
+                  data-filter={cat}
+                  data-hidden={index >= MAX_VISIBLE_CATEGORIES ? 'true' : 'false'}
+                >
+                  {cat}
+                </button>
+              ))}
+              {hiddenRootCount > 0 && (
+                <button
+                  class="rounded-full border border-border bg-muted/60 px-3 py-1 font-semibold text-foreground/80 transition-colors hover:bg-muted"
+                  data-more-button="true"
+                  aria-expanded="false"
+                >
+                  + {hiddenRootCount} more
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+        </ScrollArea>
       </details>
     </div>
   )}
