@@ -65,6 +65,7 @@ const getFolderImage = (id: string) => `/og/wiki/${id}.png`
 const MAX_VISIBLE_CATEGORIES = 6
 const visibleRootCategories = categories.slice(0, MAX_VISIBLE_CATEGORIES)
 const hiddenRootCount = categories.length - visibleRootCategories.length
+const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
 ---
 
 <Layout class="max-w-3xl">
@@ -83,7 +84,7 @@ const hiddenRootCount = categories.length - visibleRootCategories.length
       {categories.length > 0 && (
         <div class="flex flex-col gap-2">
           <h2 class="text-lg font-semibold tracking-wide text-muted-foreground">Categories</h2>
-          <div class="flex flex-wrap items-center gap-2 pt-1 text-[12px]">
+          <div class="relative flex flex-wrap items-center gap-2 pt-1 text-[12px]">
             <button
               class="rounded-full border border-border bg-muted/60 px-3 py-1 font-semibold text-foreground/80 transition-colors hover:bg-muted"
               data-filter="all"
@@ -102,9 +103,8 @@ const hiddenRootCount = categories.length - visibleRootCategories.length
             {hiddenRootCount > 0 && (
               <button
                 class="rounded-full border border-border bg-muted/60 px-3 py-1 font-semibold text-foreground/80 transition-colors hover:bg-muted"
-                data-filter="more"
-                data-hidden-count={hiddenRootCount}
                 data-more-button="true"
+                aria-expanded="false"
               >
                 + {hiddenRootCount} more
               </button>
@@ -149,11 +149,15 @@ const hiddenRootCount = categories.length - visibleRootCategories.length
   </article>
 </Layout>
 
-<script is:inline>
+  <script is:inline>
   (() => {
     const cards = Array.from(document.querySelectorAll('[data-category]'))
-    const buttons = Array.from(document.querySelectorAll('[data-filter]'))
+    const buttons = Array.from(document.querySelectorAll('button[data-filter]'))
     const moreButton = document.querySelector('[data-more-button="true"]')
+    const hiddenPills = Array.from(
+      document.querySelectorAll('button[data-hidden="true"]'),
+    )
+    let expanded = false
 
     const setActive = (value) => {
       buttons.forEach((btn) => {
@@ -172,21 +176,32 @@ const hiddenRootCount = categories.length - visibleRootCategories.length
       setActive(value)
     }
 
+    const toggleHidden = () => {
+      expanded = !expanded
+      hiddenPills.forEach((pill) => {
+        pill.classList.toggle('hidden', !expanded)
+      })
+      if (moreButton) {
+        moreButton.textContent = expanded
+          ? 'Show less'
+          : `+ ${hiddenPills.length} more`
+        moreButton.setAttribute('aria-expanded', expanded ? 'true' : 'false')
+      }
+    }
+
     buttons.forEach((btn) => {
       btn.addEventListener('click', () => {
         const filter = btn.dataset.filter || 'all'
-        if (filter === 'more') {
-          document
-            .querySelectorAll('[data-hidden="true"]')
-            .forEach((el) => el.classList.remove('hidden'))
-          if (moreButton) {
-            moreButton.classList.add('hidden')
-          }
-          return
-        }
         applyFilter(filter)
       })
     })
+
+    if (moreButton) {
+      moreButton.addEventListener('click', (e) => {
+        e.preventDefault()
+        toggleHidden()
+      })
+    }
 
     // Default active state is "all"
     setActive('all')
