@@ -372,6 +372,16 @@
     @apply overflow-x-hidden;
   }
 
+  /* Avoid double scrollbar compensation when Radix dialog locks scroll */
+  @supports (scrollbar-gutter: stable) {
+    /* Increased specificity beats runtime styles injected by react-remove-scroll */
+    body[data-scroll-locked][data-scroll-locked] {
+      margin-right: 0 !important;
+      padding-right: 0 !important;
+      padding-left: 0 !important;
+    }
+  }
+
   .disable-transitions * {
     @apply transition-none!;
   }
