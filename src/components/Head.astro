@@ -122,8 +122,7 @@ const ogImage = image || (cleanPathname ? new URL(`/og${cleanPathname}.png`, Ast
       <link rel="preconnect" href="https://cloud.umami.is" crossorigin />
     </>
   )}
-  <!-- Prefetch search index for faster search -->
-  <link rel="prefetch" href="/api/search-index.json" as="fetch" crossorigin="anonymous" />
+  <!-- Removed prefetch of search index to avoid loading it before needed -->
   
   <!-- Google Analytics -->
   {ANALYTICS.google && (
