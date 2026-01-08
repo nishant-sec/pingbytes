@@ -186,7 +186,6 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
   const [searchIndex, setSearchIndex] = useState<SearchResult[]>([])
   const [index, setIndex] = useState<Index | null>(null)
   const [displayedResults, setDisplayedResults] = useState(10)
-  const [recentPosts, setRecentPosts] = useState<SearchResult[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
   const resultsRef = useRef<HTMLUListElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -224,8 +223,6 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
 
         if (!cancelled) {
           setIndex(searchIndex)
-          // Set recent posts from cached data
-          setRecentPosts(cached.data.slice(0, 5))
         }
         return
       }
@@ -244,7 +241,6 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
         cacheIndex(data)
         
         setSearchIndex(data)
-        setRecentPosts(data.slice(0, 5))
 
         // Create FlexSearch index
         const searchIndex = new Index({
@@ -282,14 +278,12 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
     // Only load if index hasn't been loaded yet
     if (!index) {
       loadSearchIndex()
-    } else if (recentPosts.length === 0 && searchIndex.length > 0) {
-      setRecentPosts(searchIndex.slice(0, 5))
     }
 
     return () => {
       cancelled = true
     }
-  }, [open, index, searchIndex.length, recentPosts.length])
+  }, [open, index, searchIndex.length])
 
   // Perform search with fuzzy matching and improved relevance
   const performSearch = useCallback(
@@ -495,7 +489,6 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
     }
   }
 
-  const searchHistory = getSearchHistory()
   const hasMoreResults = results.length > displayedResults
   const visibleResults = results.slice(0, displayedResults)
 
@@ -585,75 +578,14 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
 
           {/* No query - show suggestions */}
           {!query.trim() && !isLoadingIndex && (
-            <div className="py-4">
-              {/* Recent posts */}
-              {recentPosts.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="mb-3 px-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Recent Posts
-                  </h3>
-                  <ul className="space-y-2 sm:space-y-1">
-                    {recentPosts.map((post) => (
-                      <li key={post.id}>
-                        <a
-                          href={post.url}
-                          onClick={() => onOpenChange(false)}
-                          className="flex flex-col gap-2 rounded-lg sm:rounded-md p-4 sm:p-3 transition-colors active:bg-muted focus:bg-muted focus:outline-none focus:ring-2 focus:ring-ring"
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <h3 className="font-medium text-base sm:text-sm leading-tight">
-                              {post.title}
-                            </h3>
-                            <div className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
-                              <Calendar className="h-3 w-3" />
-                              <span className="hidden sm:inline">{formatDate(post.date)}</span>
-                            </div>
-                          </div>
-                          {post.description && (
-                            <p className="text-sm sm:text-xs text-muted-foreground line-clamp-2">
-                              {post.description}
-                            </p>
-                          )}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Search history */}
-              {searchHistory.length > 0 && (
-                <div>
-                  <h3 className="mb-3 px-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Recent Searches
-                  </h3>
-                  <div className="flex flex-wrap gap-2 px-2">
-                    {searchHistory.slice(0, 5).map((term, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setQuery(term)}
-                        className="inline-flex items-center gap-1 rounded-md bg-muted px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-ring"
-                      >
-                        <Clock className="h-3 w-3" />
-                        {term}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Empty state if no suggestions */}
-              {recentPosts.length === 0 && searchHistory.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <Search className="mb-2 h-8 w-8 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">
-                    Start typing to search posts...
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Search by title, description, tags, or content
-                  </p>
-                </div>
-              )}
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <Search className="mb-2 h-8 w-8 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">
+                Start typing to search posts...
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Search by title, description, tags, or content
+              </p>
             </div>
           )}
 
