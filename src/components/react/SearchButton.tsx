@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react'
 import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import SearchDialog from './SearchDialog'
 import { ErrorBoundary } from './ErrorBoundary'
 
 const SearchButton: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const [DialogComp, setDialogComp] = useState<
+    | null
+    | React.ComponentType<{ open: boolean; onOpenChange: (open: boolean) => void }>
+  >(null)
+  const [isDialogLoading, setIsDialogLoading] = useState(false)
 
   // Keyboard shortcut: Cmd/Ctrl + K
   useEffect(() => {
@@ -19,7 +23,7 @@ const SearchButton: React.FC = () => {
 
       if ((e.metaKey || e.ctrlKey) && e.key === 'k' && !isInput) {
         e.preventDefault()
-        setIsOpen(true)
+        handleOpen()
       }
     }
 
@@ -27,14 +31,30 @@ const SearchButton: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
+  const loadDialog = async () => {
+    if (DialogComp || isDialogLoading) return
+    try {
+      setIsDialogLoading(true)
+      const mod = await import('./SearchDialog')
+      setDialogComp(() => mod.default)
+    } finally {
+      setIsDialogLoading(false)
+    }
+  }
+
+  const handleOpen = () => {
+    setIsOpen(true)
+    loadDialog()
+  }
+
   return (
     <ErrorBoundary>
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={handleOpen}
         className={cn(
           'group hidden md:flex items-center gap-2 rounded-full border border-border/40 bg-foreground/[0.03] px-3.5 py-1.5 text-sm text-foreground/50 transition-all hover:bg-foreground/[0.06] hover:border-border/80 focus:outline-none focus:ring-2 focus:ring-ring/20 md:w-40 lg:w-56',
         )}
-        title="Search (⌘/Ctrl + K)"
+        title="Search (グ~/Ctrl + K)"
         aria-label="Search blog posts"
         aria-expanded={isOpen}
         aria-haspopup="dialog"
@@ -45,16 +65,16 @@ const SearchButton: React.FC = () => {
         </span>
 
         <kbd className="pointer-events-none hidden lg:flex h-5 select-none items-center gap-1 rounded border border-border/50 bg-background/50 px-1.5 font-mono text-[10px] font-medium opacity-60 group-hover:opacity-100 transition-opacity">
-          <span className="text-xs">⌘</span>K
+          <span className="text-xs">グ~</span>K
         </kbd>
       </button>
 
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => setIsOpen(true)}
+        onClick={handleOpen}
         className="size-9 md:hidden"
-        title="Search (⌘/Ctrl + K)"
+        title="Search (グ~/Ctrl + K)"
         aria-label="Search blog posts"
         aria-expanded={isOpen}
         aria-haspopup="dialog"
@@ -63,9 +83,14 @@ const SearchButton: React.FC = () => {
         <span className="sr-only">Search</span>
       </Button>
 
-      <ErrorBoundary>
-        <SearchDialog open={isOpen} onOpenChange={setIsOpen} />
-      </ErrorBoundary>
+      {DialogComp && (
+        <ErrorBoundary>
+          <DialogComp open={isOpen} onOpenChange={setIsOpen} />
+        </ErrorBoundary>
+      )}
+      {!DialogComp && isDialogLoading && (
+        <div className="hidden" aria-hidden="true" />
+      )}
     </ErrorBoundary>
   )
 }

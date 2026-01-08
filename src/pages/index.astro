@@ -207,7 +207,7 @@ const experience = [
         </div>
         <div class="flex-1 overflow-hidden">
           <ErrorBoundary client:load transition:persist="skills-error-boundary">
-            <Skills client:load transition:persist="skills-section" />
+            <Skills client:visible transition:persist="skills-section" />
           </ErrorBoundary>
         </div>
       </div>
