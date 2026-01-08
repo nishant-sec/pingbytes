@@ -85,7 +85,7 @@ const MobileMenu = () => {
   }
 
   return (
-    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen} modal={false}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="md:hidden rounded-full size-9" title="Menu">
           <Menu className="h-5 w-5" />
