@@ -225,7 +225,8 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
     const getGroups = () =>
       Array.from(document.querySelectorAll('.js-category-pills'))
 
-    const applyFilter = (value) => {
+    const applyFilter = (value, options = {}) => {
+      const preserveDetails = options.preserveDetails || false
       activeFilter = value
 
       const cards = Array.from(document.querySelectorAll('[data-category]'))
@@ -308,7 +309,7 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
         }
 
         const details = container.closest('details')
-        if (details) details.removeAttribute('open')
+        if (details && !preserveDetails) details.removeAttribute('open')
 
         if (
           activeBtn &&
@@ -332,7 +333,7 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
         event.stopPropagation()
         const expanded = group.dataset.expanded === 'true'
         group.dataset.expanded = expanded ? 'false' : 'true'
-        applyFilter(activeFilter)
+        applyFilter(activeFilter, { preserveDetails: true })
         return
       }
 
