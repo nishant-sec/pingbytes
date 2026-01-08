@@ -436,25 +436,6 @@
   will-change: auto;
 }
 
-/* Background effects */
-.parallax-bg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  filter: grayscale(40%) contrast(1.1) brightness(0.85);
-}
-
-/* Hero background - Removed per redesign */
-.hero-bg-container {
-  display: none;
-}
-
-/* Dark mode background image - Removed per redesign */
-[data-theme='dark'] .hero-bg-container {
-  display: none;
-}
-
 /* Prevent layout shifts in hero section */
 .hero-section {
   /* Prevent layout shifts during font loading and view transitions */

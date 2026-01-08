@@ -1,5 +1,79 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { Search, Loader2, FileText, Calendar, Hash, Clock, AlertCircle, ChevronDown, X } from 'lucide-react'
+const IconSearch = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <circle cx="11" cy="11" r="8" />
+    <path d="m21 21-4.35-4.35" />
+  </svg>
+)
+
+const IconLoader = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M12 2v4" />
+    <path d="m16.2 7.8 2.8-2.8" />
+    <path d="M18 12h4" />
+    <path d="m16.2 16.2 2.8 2.8" />
+    <path d="M12 18v4" />
+    <path d="m5 19 2.8-2.8" />
+    <path d="M2 12h4" />
+    <path d="m5 5 2.8 2.8" />
+  </svg>
+)
+
+const IconFileText = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
+    <path d="M14 2v6h6" />
+    <path d="M16 13H8" />
+    <path d="M16 17H8" />
+    <path d="M10 9H8" />
+  </svg>
+)
+
+const IconCalendar = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+    <line x1="16" y1="2" x2="16" y2="6" />
+    <line x1="8" y1="2" x2="8" y2="6" />
+    <line x1="3" y1="10" x2="21" y2="10" />
+  </svg>
+)
+
+const IconHash = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <line x1="4" y1="9" x2="20" y2="9" />
+    <line x1="4" y1="15" x2="20" y2="15" />
+    <line x1="10" y1="3" x2="8" y2="21" />
+    <line x1="16" y1="3" x2="14" y2="21" />
+  </svg>
+)
+
+const IconClock = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 6v6l4 2" />
+  </svg>
+)
+
+const IconAlert = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <circle cx="12" cy="12" r="10" />
+    <line x1="12" y1="8" x2="12" y2="12" />
+    <line x1="12" y1="16" x2="12.01" y2="16" />
+  </svg>
+)
+
+const IconChevronDown = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+)
+
+const IconX = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+)
 import { Index } from 'flexsearch'
 import {
   Dialog,
@@ -512,7 +586,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
           {selectedIndex >= 0 && results[selectedIndex] && `Selected: ${results[selectedIndex].title}`}
         </div>
         <div className="flex shrink-0 items-center border-b border-border px-4 sm:px-4 pt-safe relative">
-          <Search className="mr-3 h-5 w-5 shrink-0 text-muted-foreground sm:h-4 sm:w-4" />
+          <IconSearch className="mr-3 h-5 w-5 shrink-0 text-muted-foreground sm:h-4 sm:w-4" />
           <input
             ref={inputRef}
             type="text"
@@ -535,7 +609,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
             aria-autocomplete="list"
           />
           {isLoading && (
-            <Loader2 className="absolute right-14 sm:relative sm:right-0 ml-2 h-5 w-5 sm:h-4 sm:w-4 animate-spin text-muted-foreground shrink-0" />
+            <IconLoader className="absolute right-14 sm:relative sm:right-0 ml-2 h-5 w-5 sm:h-4 sm:w-4 animate-spin text-muted-foreground shrink-0" />
           )}
           {/* Close button for mobile - positioned in header */}
           <button
@@ -543,17 +617,17 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
             className="sm:hidden absolute right-4 top-1/2 -translate-y-1/2 rounded-lg p-2 opacity-70 transition-opacity active:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             aria-label="Close search"
           >
-            <X className="h-5 w-5" />
+            <IconX className="h-5 w-5" />
           </button>
         </div>
 
         {/* Error message */}
-        {error && (
+          {error && (
           <div
             role="alert"
             className="flex shrink-0 items-center gap-2 rounded-md bg-destructive/10 p-3 text-sm text-destructive mx-4 mt-2"
           >
-            <AlertCircle className="h-4 w-4 shrink-0" />
+            <IconAlert className="h-4 w-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
@@ -579,7 +653,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
           {/* No query - show suggestions */}
           {!query.trim() && !isLoadingIndex && (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <Search className="mb-2 h-8 w-8 text-muted-foreground" />
+              <IconSearch className="mb-2 h-8 w-8 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
                 Start typing to search posts...
               </p>
@@ -592,7 +666,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
           {/* No results */}
           {query.trim() && results.length === 0 && !isLoading && !isLoadingIndex && (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <FileText className="mb-2 h-8 w-8 text-muted-foreground" />
+              <IconFileText className="mb-2 h-8 w-8 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
                 No results found for &quot;{query}&quot;
               </p>
@@ -633,7 +707,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
                         {highlightText(result.title, query)}
                       </h3>
                       <div className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
-                        <Calendar className="h-3 w-3" />
+                        <IconCalendar className="h-3 w-3" />
                         <span className="hidden sm:inline">{formatDate(result.date)}</span>
                       </div>
                     </div>
@@ -658,7 +732,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
                             key={tag}
                             className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 sm:px-1.5 sm:py-0.5 text-xs text-muted-foreground"
                           >
-                            <Hash className="h-3 w-3" />
+                            <IconHash className="h-3 w-3" />
                             {tag}
                           </span>
                         ))}
@@ -682,7 +756,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
                 onClick={() => setDisplayedResults((prev) => Math.min(prev + 10, results.length))}
                 className="flex items-center gap-2 rounded-lg sm:rounded-md border border-border bg-background px-6 py-3 sm:px-4 sm:py-2 text-base sm:text-sm text-foreground transition-colors active:bg-muted focus:outline-none focus:ring-2 focus:ring-ring shadow-sm"
               >
-                <ChevronDown className="h-5 w-5 sm:h-4 sm:w-4" />
+                <IconChevronDown className="h-5 w-5 sm:h-4 sm:w-4" />
                 Load more ({results.length - displayedResults} remaining)
               </button>
             </div>

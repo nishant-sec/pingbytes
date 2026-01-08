@@ -63,7 +63,9 @@ const mergedClass = cn('smart-image', className)
   .smart-image {
     filter: blur(16px);
     transform: scale(1.02);
-    transition: filter 220ms ease, transform 220ms ease, opacity 220ms ease;
+    opacity: 0.6;
+    transition: filter 320ms ease, transform 320ms ease, opacity 320ms ease;
+    will-change: filter, transform, opacity;
   }
 
   .smart-image[data-loaded='true'] {

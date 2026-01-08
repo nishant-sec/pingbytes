@@ -6,7 +6,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Palette, Sun, Moon, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   COLOR_PALETTES,
@@ -24,6 +23,36 @@ import {
 interface ThemeSelectorProps {
   className?: string
 }
+
+const IconSun = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v2m0 16v2m10-10h-2M4 12H2m15.364-7.364-1.414 1.414M8.05 15.95l-1.414 1.414m0-13.778 1.414 1.414m9.9 9.9 1.414 1.414" />
+  </svg>
+)
+
+const IconMoon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
+  </svg>
+)
+
+const IconPalette = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M12 22a10 10 0 1 1 10-10c0 3-2 4-4 4h-1a2 2 0 0 0-2 2c0 2-1 4-3 4Z" />
+    <circle cx="10" cy="7" r="1" />
+    <circle cx="14" cy="7" r="1" />
+    <circle cx="7" cy="10" r="1" />
+    <circle cx="7" cy="14" r="1" />
+    <circle cx="17" cy="10" r="1" />
+  </svg>
+)
+
+const IconCheck = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="m5 12 5 5 9-11" />
+  </svg>
+)
 
 export default function ThemeSelector({ className }: ThemeSelectorProps = {}) {
   const [currentPalette, setCurrentPalette] = useState<PaletteId>(DEFAULT_PALETTE)
@@ -111,9 +140,9 @@ export default function ThemeSelector({ className }: ThemeSelectorProps = {}) {
           aria-label="Theme & appearance"
         >
           {currentTheme === 'dark' ? (
-            <Moon className="h-[1.1rem] w-[1.1rem] transition-all" aria-hidden="true" />
+            <IconMoon className="h-[1.1rem] w-[1.1rem] transition-all" aria-hidden="true" />
           ) : (
-            <Sun className="h-[1.1rem] w-[1.1rem] transition-all" aria-hidden="true" />
+            <IconSun className="h-[1.1rem] w-[1.1rem] transition-all" aria-hidden="true" />
           )}
           <span className="sr-only">Theme & appearance</span>
         </Button>
@@ -144,9 +173,9 @@ export default function ThemeSelector({ className }: ThemeSelectorProps = {}) {
                 aria-pressed={currentTheme === theme}
               >
                 {theme === 'dark' ? (
-                  <Moon className="size-3.5" />
+                  <IconMoon className="size-3.5" />
                 ) : (
-                  <Sun className="size-3.5" />
+                  <IconSun className="size-3.5" />
                 )}
                 <span className="capitalize">{theme}</span>
               </button>
@@ -159,7 +188,7 @@ export default function ThemeSelector({ className }: ThemeSelectorProps = {}) {
         {/* Color Palette Section */}
         <div>
           <div className="px-2 mb-3 flex items-center gap-1.5">
-            <Palette className="h-3 w-3 text-foreground/30" />
+            <IconPalette className="h-3 w-3 text-foreground/30" />
             <span className="text-[10px] font-bold text-foreground/30 uppercase tracking-[0.1em]">
               Accent Color
             </span>
@@ -186,7 +215,7 @@ export default function ThemeSelector({ className }: ThemeSelectorProps = {}) {
                 />
                 {currentPalette === palette.id && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <Check className="h-2.5 w-2.5 text-white mix-blend-difference" />
+                    <IconCheck className="h-2.5 w-2.5 text-white mix-blend-difference" />
                   </div>
                 )}
               </button>

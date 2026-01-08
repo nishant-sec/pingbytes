@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ErrorBoundary } from './ErrorBoundary'
+
+const IconSearch = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <circle cx="11" cy="11" r="8" />
+    <path d="m21 21-4.35-4.35" />
+  </svg>
+)
 
 const SearchButton: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -76,7 +82,7 @@ const SearchButton: React.FC = () => {
         aria-expanded={isOpen}
         aria-haspopup="dialog"
       >
-        <Search className="h-4 w-4 shrink-0 transition-colors group-hover:text-foreground/80" />
+        <IconSearch className="h-4 w-4 shrink-0 transition-colors group-hover:text-foreground/80" />
         <span className="flex-1 text-left truncate transition-colors group-hover:text-foreground/80">
           Search...
         </span>
@@ -98,7 +104,7 @@ const SearchButton: React.FC = () => {
         aria-expanded={isOpen}
         aria-haspopup="dialog"
       >
-        <Search className="h-5 w-5" />
+        <IconSearch className="h-5 w-5" />
         <span className="sr-only">Search</span>
       </Button>
 
