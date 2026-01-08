@@ -213,42 +213,63 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
 
   <script is:inline>
   (() => {
-    const cards = Array.from(document.querySelectorAll('[data-category]'))
-    const groups = Array.from(document.querySelectorAll('.js-category-pills'))
-    const mobileLabel = document.getElementById('mobile-categories-current')
     let activeFilter = 'all'
 
     const setMobileLabel = (value) => {
+      const mobileLabel = document.getElementById('mobile-categories-current')
       if (!mobileLabel) return
       mobileLabel.textContent =
         value && value !== 'all' ? value : 'Categories'
     }
 
-    const filterCards = (value) => {
+    const getGroups = () =>
+      Array.from(document.querySelectorAll('.js-category-pills'))
+
+    const applyFilter = (value) => {
+      activeFilter = value
+
+      const cards = Array.from(document.querySelectorAll('[data-category]'))
       cards.forEach((card) => {
         const cat = card.getAttribute('data-category')
         const show = value === 'all' || cat === value
         card.classList.toggle('hidden', !show)
       })
-    }
 
-    const setupGroup = (container) => {
-      const buttons = Array.from(
-        container.querySelectorAll('button[data-filter]'),
-      )
-      const moreButton = container.querySelector('[data-more-button="true"]')
-      const hiddenPills = buttons.filter(
-        (pill) => pill.dataset.hidden === 'true',
-      )
-      const allButton = buttons.find((btn) => btn.dataset.filter === 'all')
-      let expanded = false
+      let labelValue = 'Categories'
 
-      buttons.forEach((btn, index) => {
-        btn.dataset.index = `${index}`
-        btn.dataset.label = btn.textContent.trim()
-      })
+      getGroups().forEach((container) => {
+        const buttons = Array.from(
+          container.querySelectorAll('button[data-filter]'),
+        )
+        const moreButton = container.querySelector('[data-more-button="true"]')
+        const hiddenPills = buttons.filter(
+          (pill) => pill.dataset.hidden === 'true',
+        )
+        const allButton = buttons.find((btn) => btn.dataset.filter === 'all')
 
-      const updateLabels = (activeBtn) => {
+        buttons.forEach((btn, index) => {
+          btn.dataset.index = btn.dataset.index ?? `${index}`
+          btn.dataset.label = btn.dataset.label || btn.textContent.trim()
+        })
+
+        // reset collapse on filter change
+        container.dataset.expanded = container.dataset.expanded || 'false'
+        let expanded = container.dataset.expanded === 'true'
+
+        const activeBtn =
+          buttons.find((btn) => btn.dataset.filter === value) || allButton
+
+        // When applying a filter, collapse unless it was explicitly expanded
+        if (value !== activeFilter || value === 'all') {
+          expanded = container.dataset.expanded === 'true'
+        }
+
+        buttons.forEach((btn) => {
+          const isActive = btn.dataset.filter === value
+          btn.classList.toggle('bg-primary/10', isActive)
+          btn.classList.toggle('text-primary', isActive)
+        })
+
         buttons.forEach((btn) => {
           const label = btn.dataset.label || btn.textContent.trim()
           const isActive = btn === activeBtn && btn.dataset.filter !== 'all'
@@ -261,17 +282,7 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
             isActive ? `${label} selected. Click to clear filter.` : label,
           )
         })
-      }
 
-      const setActiveStyles = (value) => {
-        buttons.forEach((btn) => {
-          const isActive = btn.dataset.filter === value
-          btn.classList.toggle('bg-primary/10', isActive)
-          btn.classList.toggle('text-primary', isActive)
-        })
-      }
-
-      const reorderPills = (activeBtn) => {
         const sorted = [...buttons].sort((a, b) => {
           if (a === activeBtn) return -1
           if (b === activeBtn) return 1
@@ -281,59 +292,24 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
         })
         sorted.forEach((btn) => container.appendChild(btn))
         if (moreButton) container.appendChild(moreButton)
-      }
 
-      const syncHiddenVisibility = (activeBtn) => {
         hiddenPills.forEach((pill) => {
           const keepVisible = pill === activeBtn
           pill.classList.toggle('hidden', !expanded && !keepVisible)
         })
         if (moreButton) {
+          const hiddenCount = hiddenPills.filter((pill) =>
+            pill.classList.contains('hidden'),
+          ).length
           moreButton.textContent = expanded
             ? 'Show less'
-            : `+ ${hiddenPills.length} more`
+            : `+ ${hiddenCount} more`
           moreButton.setAttribute('aria-expanded', expanded ? 'true' : 'false')
         }
-      }
 
-      const update = (value) => {
-        const activeBtn =
-          buttons.find((btn) => btn.dataset.filter === value) || allButton
-        expanded = false
-        setActiveStyles(value)
-        updateLabels(activeBtn)
-        reorderPills(activeBtn)
-        syncHiddenVisibility(activeBtn)
-        return activeBtn
-      }
-
-      const toggleHidden = (value) => {
-        expanded = !expanded
-        const activeBtn =
-          buttons.find((btn) => btn.dataset.filter === value) || allButton
-        syncHiddenVisibility(activeBtn)
-      }
-
-      return {
-        buttons,
-        moreButton,
-        update,
-        toggleHidden,
-        allButton,
-        container,
-      }
-    }
-
-    const groupStates = groups.map((group) => setupGroup(group))
-
-    const applyFilter = (value) => {
-      activeFilter = value
-      filterCards(value)
-      let labelValue = 'Categories'
-      groupStates.forEach((group) => {
-        const activeBtn = group.update(value)
-        const details = group.container?.closest('details')
+        const details = container.closest('details')
         if (details) details.removeAttribute('open')
+
         if (
           activeBtn &&
           activeBtn.dataset.filter &&
@@ -342,27 +318,46 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
           labelValue = activeBtn.dataset.label || activeBtn.dataset.filter
         }
       })
+
       setMobileLabel(labelValue)
     }
 
-    groupStates.forEach((group) => {
-      group.buttons.forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const filter = btn.dataset.filter || 'all'
-          const newFilter =
-            activeFilter === filter && filter !== 'all' ? 'all' : filter
-          applyFilter(newFilter)
-        })
-      })
-      if (group.moreButton) {
-        group.moreButton.addEventListener('click', (e) => {
-          e.preventDefault()
-          group.toggleHidden(activeFilter)
-        })
-      }
-    })
+    const handleClick = (event) => {
+      const target = event.target.closest('button')
+      if (!target) return
+      const group = target.closest('.js-category-pills')
+      if (!group) return
 
-    // Default active state is "all"
-    applyFilter('all')
+      if (target.dataset.moreButton === 'true') {
+        event.stopPropagation()
+        const expanded = group.dataset.expanded === 'true'
+        group.dataset.expanded = expanded ? 'false' : 'true'
+        applyFilter(activeFilter)
+        return
+      }
+
+      if (target.hasAttribute('data-filter')) {
+        const filter = target.dataset.filter || 'all'
+        const newFilter =
+          activeFilter === filter && filter !== 'all' ? 'all' : filter
+        applyFilter(newFilter)
+      }
+    }
+
+    const bindOnce = (eventName) => {
+      const handler = () => setTimeout(() => {
+        applyFilter(activeFilter)
+      }, 0)
+      document.addEventListener(eventName, handler)
+    }
+
+    if (!window.__wikiCategoriesBound) {
+      document.addEventListener('click', handleClick, true)
+      window.__wikiCategoriesBound = true
+    }
+
+    bindOnce('astro:page-load')
+    bindOnce('astro:after-swap')
+    setTimeout(() => applyFilter('all'), 0)
   })()
 </script>
