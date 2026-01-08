@@ -14,7 +14,7 @@ const personSchema = {
   "name": "Robert Melcher",
   "alternateName": "merox",
   "url": SITE.href,
-  "image": new URL('/robert.webp', Astro.site).href,
+  "image": new URL('/about.avif', Astro.site).href,
   "jobTitle": "HPC System Administrator",
   "worksFor": {
     "@type": "Organization",
@@ -56,15 +56,15 @@ const personSchema = {
       <div class="relative shrink-0">
         <div class="size-32 md:size-40 rounded-2xl overflow-hidden border border-border shadow-sm">
           <SmartImage
-            src="/robert.webp"
-            alt="Robert Melcher"
+            src="/about.avif"
+            alt="About portrait"
             width={1492}
             height={1864}
             class="object-cover w-full h-full transition-transform duration-500 hover:scale-105"
             loading="eager"
             decoding="async"
             sizes="(min-width: 768px) 160px, 128px"
-            fallbackSrc="/robert.webp"
+            fallbackSrc="/about.avif"
           />
         </div>
       </div>

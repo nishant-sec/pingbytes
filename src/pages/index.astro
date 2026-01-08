@@ -25,7 +25,7 @@ const personSchema = {
   "name": "Robert Melcher",
   "alternateName": "merox",
   "url": SITE.href,
-  "image": new URL('/reworkedmeroxdc1.webp', Astro.site).href,
+  "image": new URL('/nishant.avif', Astro.site).href,
   "jobTitle": "HPC System Administrator",
   "worksFor": { "@type": "Organization", "name": "Forvia" },
   "sameAs": ["https://github.com/meroxdotdev", "https://www.linkedin.com/in/robert-melcher-92a1a9157"],
@@ -96,7 +96,7 @@ const experience = [
   <script is:inline type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
   <script is:inline type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
   
-  <link rel="preload" as="image" href="/meroxindc1.webp" type="image/webp" fetchpriority="high" media="(min-width: 768px)" />
+  <link rel="preload" as="image" href="/nishant.avif" type="image/avif" fetchpriority="high" media="(min-width: 768px)" />
   
   <style>
     .hero-glow { animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
@@ -158,15 +158,15 @@ const experience = [
       <div class="relative flex-shrink-0 w-full max-w-[160px] md:max-w-none md:w-[220px] lg:w-[250px]">
         <div class="hero-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/5 rounded-full blur-[60px] md:blur-[80px] -z-10" aria-hidden="true"></div>
         <SmartImage
-          src="/meroxindc1.webp"
-          alt="Robert Melcher"
+          src="/nishant.avif"
+          alt="Profile portrait"
           width={320}
           height={400}
           class="w-full h-auto"
           loading="eager"
           decoding="async"
           sizes="(min-width: 1024px) 250px, (min-width: 768px) 220px, 160px"
-          fallbackSrc="/meroxindc1.webp"
+          fallbackSrc="/nishant.avif"
         />
       </div>
     </div>
