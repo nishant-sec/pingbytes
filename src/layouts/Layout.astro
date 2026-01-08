@@ -105,5 +105,19 @@ const { class: className, hideFloatingSidebar = false } = Astro.props
     </main>
     {false && !hideFloatingSidebar && <FloatingSidebar />}
     <Footer />
+
+    <!-- Service worker registration for PWA/offline support -->
+    <script is:inline>
+      (() => {
+        if (!('serviceWorker' in navigator)) return
+        const isLocal = ['localhost', '127.0.0.1'].includes(location.hostname)
+        // Register in dev too for testing; remove if unwanted
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('/sw.js')
+            .catch((err) => console.error('SW registration failed', err))
+        })
+      })()
+    </script>
   </body>
 </html>

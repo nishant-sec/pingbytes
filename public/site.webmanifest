@@ -15,7 +15,12 @@
       "purpose": "maskable"
     }
   ],
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
-  "display": "standalone"
+  "orientation": "portrait-primary",
+  "description": "Pingbytes – resources, guides, and tools available offline.",
+  "categories": ["education", "productivity", "utilities"]
 }
