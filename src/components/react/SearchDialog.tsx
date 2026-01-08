@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils'
 import { PERFORMANCE } from '@/lib/constants'
 
 interface SearchResult {
+  type: 'blog' | 'wiki' | 'project'
   id: string
   title: string
   description: string
@@ -33,7 +34,7 @@ const STORAGE_KEYS = {
 } as const
 
 // Cache version - increment when index structure changes
-const INDEX_VERSION = '1.0'
+const INDEX_VERSION = '1.1'
 
 
 // Calculate relevance score
