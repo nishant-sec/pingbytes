@@ -84,7 +84,7 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
       {categories.length > 0 && (
         <div class="flex flex-col gap-2">
           <h2 class="text-lg font-semibold tracking-wide text-muted-foreground">Categories</h2>
-          <div class="relative flex flex-wrap items-center gap-2 pt-1 text-[12px]">
+          <div class="js-category-pills relative flex flex-wrap items-center gap-2 pt-1 text-[12px]">
             <button
               class="rounded-full border border-border bg-muted/60 px-3 py-1 font-semibold text-foreground/80 transition-colors hover:bg-muted"
               data-filter="all"
@@ -153,11 +153,32 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
   (() => {
     const cards = Array.from(document.querySelectorAll('[data-category]'))
     const buttons = Array.from(document.querySelectorAll('button[data-filter]'))
+    const pillContainer = document.querySelector('.js-category-pills')
     const moreButton = document.querySelector('[data-more-button="true"]')
-    const hiddenPills = Array.from(
-      document.querySelectorAll('button[data-hidden="true"]'),
-    )
+    const hiddenPills = buttons.filter((pill) => pill.dataset.hidden === 'true')
+    const allButton = buttons.find((btn) => btn.dataset.filter === 'all')
     let expanded = false
+    let activeFilter = 'all'
+
+    buttons.forEach((btn, index) => {
+      btn.dataset.index = `${index}`
+      btn.dataset.label = btn.textContent.trim()
+    })
+
+    const updateLabels = (activeBtn) => {
+      buttons.forEach((btn) => {
+        const label = btn.dataset.label || btn.textContent.trim()
+        const isActive = btn === activeBtn && btn.dataset.filter !== 'all'
+        btn.innerHTML = isActive
+          ? `${label} <span aria-hidden="true" class="ml-1">&times;</span>`
+          : label
+        btn.setAttribute('aria-pressed', btn === activeBtn ? 'true' : 'false')
+        btn.setAttribute(
+          'aria-label',
+          isActive ? `${label} selected. Click to clear filter.` : label,
+        )
+      })
+    }
 
     const setActive = (value) => {
       buttons.forEach((btn) => {
@@ -167,19 +188,25 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
       })
     }
 
-    const applyFilter = (value) => {
-      cards.forEach((card) => {
-        const cat = card.getAttribute('data-category')
-        const show = value === 'all' || cat === value
-        card.classList.toggle('hidden', !show)
+    const reorderPills = (activeBtn) => {
+      if (!pillContainer) return
+      const sorted = [...buttons].sort((a, b) => {
+        if (a === activeBtn) return -1
+        if (b === activeBtn) return 1
+        const ai = Number(a.dataset.index || 0)
+        const bi = Number(b.dataset.index || 0)
+        return ai - bi
       })
-      setActive(value)
+      sorted.forEach((btn) => pillContainer.appendChild(btn))
+      if (moreButton) {
+        pillContainer.appendChild(moreButton)
+      }
     }
 
-    const toggleHidden = () => {
-      expanded = !expanded
+    const syncHiddenVisibility = (activeBtn) => {
       hiddenPills.forEach((pill) => {
-        pill.classList.toggle('hidden', !expanded)
+        const keepVisible = pill === activeBtn
+        pill.classList.toggle('hidden', !expanded && !keepVisible)
       })
       if (moreButton) {
         moreButton.textContent = expanded
@@ -189,10 +216,35 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
       }
     }
 
+    const applyFilter = (value) => {
+      const activeBtn =
+        buttons.find((btn) => btn.dataset.filter === value) || allButton
+      activeFilter = value
+      expanded = false
+      cards.forEach((card) => {
+        const cat = card.getAttribute('data-category')
+        const show = value === 'all' || cat === value
+        card.classList.toggle('hidden', !show)
+      })
+      setActive(value)
+      updateLabels(activeBtn)
+      reorderPills(activeBtn)
+      syncHiddenVisibility(activeBtn)
+    }
+
+    const toggleHidden = () => {
+      expanded = !expanded
+      const activeBtn =
+        buttons.find((btn) => btn.dataset.filter === activeFilter) || allButton
+      syncHiddenVisibility(activeBtn)
+    }
+
     buttons.forEach((btn) => {
       btn.addEventListener('click', () => {
         const filter = btn.dataset.filter || 'all'
-        applyFilter(filter)
+        const newFilter =
+          activeFilter === filter && filter !== 'all' ? 'all' : filter
+        applyFilter(newFilter)
       })
     })
 
