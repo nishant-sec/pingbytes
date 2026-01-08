@@ -47,10 +47,27 @@ const SearchButton: React.FC = () => {
     loadDialog()
   }
 
+  // Prefetch dialog on idle to reduce first-open latency without blocking FCP
+  useEffect(() => {
+    const idle = (window as any).requestIdleCallback
+    const handle = idle
+      ? idle(() => loadDialog())
+      : window.setTimeout(() => loadDialog(), 1200)
+    return () => {
+      if (idle && typeof (window as any).cancelIdleCallback === 'function') {
+        ;(window as any).cancelIdleCallback(handle)
+      } else {
+        clearTimeout(handle as number)
+      }
+    }
+  }, [])
+
   return (
     <ErrorBoundary>
       <button
         onClick={handleOpen}
+        onMouseEnter={loadDialog}
+        onFocus={loadDialog}
         className={cn(
           'group hidden md:flex items-center gap-2 rounded-full border border-border/40 bg-foreground/[0.03] px-3.5 py-1.5 text-sm text-foreground/50 transition-all hover:bg-foreground/[0.06] hover:border-border/80 focus:outline-none focus:ring-2 focus:ring-ring/20 md:w-40 lg:w-56',
         )}
@@ -73,6 +90,8 @@ const SearchButton: React.FC = () => {
         variant="ghost"
         size="icon"
         onClick={handleOpen}
+        onMouseEnter={loadDialog}
+        onFocus={loadDialog}
         className="size-9 md:hidden"
         title="Search (グ~/Ctrl + K)"
         aria-label="Search blog posts"
