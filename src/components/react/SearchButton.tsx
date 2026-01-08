@@ -77,7 +77,7 @@ const SearchButton: React.FC = () => {
         className={cn(
           'group hidden md:flex items-center gap-2 rounded-full border border-border/40 bg-foreground/[0.03] px-3.5 py-1.5 text-sm text-foreground/50 transition-all hover:bg-foreground/[0.06] hover:border-border/80 focus:outline-none focus:ring-2 focus:ring-ring/20 md:w-40 lg:w-56',
         )}
-        title="Search (グ~/Ctrl + K)"
+        title="Search (Ctrl/Cmd + K)"
         aria-label="Search blog posts"
         aria-expanded={isOpen}
         aria-haspopup="dialog"
@@ -88,7 +88,7 @@ const SearchButton: React.FC = () => {
         </span>
 
         <kbd className="pointer-events-none hidden lg:flex h-5 select-none items-center gap-1 rounded border border-border/50 bg-background/50 px-1.5 font-mono text-[10px] font-medium opacity-60 group-hover:opacity-100 transition-opacity">
-          <span className="text-xs">グ~</span>K
+          <span className="text-[10px]">Ctrl</span>K
         </kbd>
       </button>
 
@@ -99,7 +99,7 @@ const SearchButton: React.FC = () => {
         onMouseEnter={loadDialog}
         onFocus={loadDialog}
         className="size-9 md:hidden"
-        title="Search (グ~/Ctrl + K)"
+        title="Search (Ctrl/Cmd + K)"
         aria-label="Search blog posts"
         aria-expanded={isOpen}
         aria-haspopup="dialog"
@@ -121,3 +121,7 @@ const SearchButton: React.FC = () => {
 }
 
 export default SearchButton
+
+
+
+
