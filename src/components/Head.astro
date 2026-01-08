@@ -94,9 +94,9 @@ const ogImage = image || (cleanPathname ? new URL(`/og${cleanPathname}.png`, Ast
   <link rel="manifest" href="/site.webmanifest" />
   <link
     rel="alternate"
-    type="application/rss+xml"
-    title={SITE.title}
-    href={new URL('rss.xml', Astro.site)}
+    type="application/atom+xml"
+    title={`${SITE.title} Atom Feed`}
+    href={new URL('atom.xml', Astro.site)}
   />
 
   <Favicons />

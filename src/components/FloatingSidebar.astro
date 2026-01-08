@@ -47,12 +47,12 @@ const position: Position = 'right-fixed' as Position // Change this to test diff
         <div class="pt-3 border-t border-border/40">
           <div class="flex gap-2">
             <Link
-              href="/rss.xml"
+              href="/atom.xml"
               class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-md border border-border/60 bg-background text-foreground text-xs font-medium transition-all duration-200 hover:bg-muted/50 hover:border-border active:scale-[0.98]"
               title="RSS Feed"
             >
               <Icon name="lucide:rss" class="w-3.5 h-3.5" />
-              <span>RSS</span>
+              <span>Atom</span>
             </Link>
           </div>
         </div>
@@ -131,11 +131,11 @@ const position: Position = 'right-fixed' as Position // Change this to test diff
         <!-- Quick Links & Tags -->
         <div class="flex items-center gap-4">
           <Link
-            href="/rss.xml"
+            href="/atom.xml"
             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border/60 bg-background text-foreground text-xs font-medium transition-all duration-200 hover:bg-muted/50"
           >
             <Icon name="lucide:rss" class="w-3.5 h-3.5" />
-            <span>RSS</span>
+            <span>Atom</span>
           </Link>
           
           {popularTags.length > 0 && (
@@ -199,11 +199,11 @@ const position: Position = 'right-fixed' as Position // Change this to test diff
         <!-- Quick Actions -->
         <div class="flex gap-2">
           <Link
-            href="/rss.xml"
+            href="/atom.xml"
             class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-md border border-border/60 bg-background text-foreground text-xs font-medium transition-all duration-200 hover:bg-muted/50"
           >
             <Icon name="lucide:rss" class="w-3.5 h-3.5" />
-            <span>RSS</span>
+            <span>Atom</span>
           </Link>
           <a
             href="mailto:your@email.com?subject=Advertising Inquiry"
@@ -367,4 +367,3 @@ const position: Position = 'right-fixed' as Position // Change this to test diff
     setTimeout(updateSidebarPosition, 100)
   })
 </script>
-

@@ -76,8 +76,8 @@ export const SOCIAL_LINKS: SocialLink[] = [
     label: 'Email',
   },
   {
-    href: '/rss.xml',
-    label: 'RSS',
+    href: '/atom.xml',
+    label: 'Atom',
   },
 ]
 
@@ -87,6 +87,7 @@ export const ICON_MAP: IconMap = {
   LinkedIn: 'lucide:linkedin',
   Twitter: 'lucide:twitter',
   Email: 'lucide:mail',
+  Atom: 'lucide:rss',
   RSS: 'lucide:rss',
 }
 
