@@ -59,7 +59,7 @@ const categories = Array.from(
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "CollectionPage",
-  "name": "Wiki",
+  "name": "Resources",
   "description": "Collection of learning resources, guides, and interactive tools for developers and system administrators.",
   "url": pageUrl,
   "mainEntity": {
@@ -87,7 +87,7 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
         <summary class="flex w-full cursor-pointer items-center justify-between">
           <div class="mx-auto flex w-full max-w-3xl items-center px-4 py-3">
             <span class="text-muted-foreground flex-grow truncate text-sm">
-              <span id="mobile-categories-current">Notes Categories</span>
+              <span id="mobile-categories-current">Resource Categories</span>
             </span>
             <span class="text-muted-foreground ml-2">
               <Icon
@@ -133,19 +133,19 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
 
   <PageHead 
     slot="head" 
-    title="Wiki - Interactive Tools & Guides"
+    title="Resources - Interactive Tools & Guides"
     description="Free online learning resources and tools for system administrators, developers, and IT professionals."
   />
   
   <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
 
-  <Breadcrumbs items={[{ label: 'Wiki', icon: 'lucide:book-open' }]} />
+  <Breadcrumbs items={[{ label: 'Resources', icon: 'lucide:book-open' }]} />
 
   <article class="flex flex-col gap-y-6">
     {categories.length > 0 && (
       <div class="hidden xl:block space-y-2">
         <div class="flex flex-col gap-2">
-          <h2 class="text-lg font-semibold tracking-wide text-muted-foreground">Notes Categories</h2>
+          <h2 class="text-lg font-semibold tracking-wide text-muted-foreground">Resource Categories</h2>
           <div class="js-category-pills relative flex flex-wrap items-center gap-2 pt-1 text-[12px]">
             <button
               class="rounded-full border border-border bg-muted/60 px-3 py-1 font-semibold text-foreground/80 transition-colors hover:bg-muted"
@@ -219,7 +219,7 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
       const mobileLabel = document.getElementById('mobile-categories-current')
       if (!mobileLabel) return
       mobileLabel.textContent =
-        value && value !== 'all' ? value : 'Notes Categories'
+        value && value !== 'all' ? value : 'Resource Categories'
     }
 
     const getGroups = () =>
@@ -236,7 +236,7 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
         card.classList.toggle('hidden', !show)
       })
 
-      let labelValue = 'Notes Categories'
+      let labelValue = 'Resource Categories'
 
       getGroups().forEach((container) => {
         const buttons = Array.from(

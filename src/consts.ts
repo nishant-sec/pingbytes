@@ -54,7 +54,7 @@ export const NAV_LINKS: SocialLink[] = [
   },
   {
     href: '/wiki',
-    label: 'Wiki',
+    label: 'Resources',
   },
   {
     href: '/about',
