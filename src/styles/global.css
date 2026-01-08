@@ -357,6 +357,7 @@
 
   html {
     @apply bg-background text-foreground scheme-light;
+    scrollbar-gutter: stable;
   }
 
   html[data-theme='dark'] {
