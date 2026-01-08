@@ -306,6 +306,7 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
         update,
         toggleHidden,
         allButton,
+        container,
       }
     }
 
@@ -317,6 +318,8 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
       let labelValue = 'Categories'
       groupStates.forEach((group) => {
         const activeBtn = group.update(value)
+        const details = group.container?.closest('details')
+        if (details) details.removeAttribute('open')
         if (
           activeBtn &&
           activeBtn.dataset.filter &&
