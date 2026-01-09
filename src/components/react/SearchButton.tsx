@@ -53,21 +53,6 @@ const SearchButton: React.FC = () => {
     loadDialog()
   }
 
-  // Prefetch dialog on idle to reduce first-open latency without blocking FCP
-  useEffect(() => {
-    const idle = (window as any).requestIdleCallback
-    const handle = idle
-      ? idle(() => loadDialog())
-      : window.setTimeout(() => loadDialog(), 1200)
-    return () => {
-      if (idle && typeof (window as any).cancelIdleCallback === 'function') {
-        ;(window as any).cancelIdleCallback(handle)
-      } else {
-        clearTimeout(handle as number)
-      }
-    }
-  }, [])
-
   return (
     <ErrorBoundary>
       <button
