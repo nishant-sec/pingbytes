@@ -1,11 +1,11 @@
 ---
+category: windows
 title: "Security Hardening Checklist"
 description: "Baseline controls for servers and workstations to reduce common risks."
 date: 2025-01-04
 tags: ["windows", "security"]
 draft: false
 ---
-
 ## Accounts and access
 - Enforce strong password policy and lockout thresholds.
 - Disable or rename the built-in Administrator account when possible.
@@ -35,3 +35,9 @@ draft: false
 - Use host firewalls with allow-lists.
 - Limit inbound rules to required ports and subnets.
 - Enable DNS logging for investigative context.
+
+
+
+
+
+

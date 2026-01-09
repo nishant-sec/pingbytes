@@ -1,11 +1,11 @@
 ---
+category: security
 title: "Phishing - Dynamic Attachment Analysis & Sandboxing"
 description: "A small, repeatable flow for triaging beginner-level alerts."
 date: 2025-01-04
 tags: ["security", "labs"]
 draft: false
 ---
-
 ## Intake
 - Confirm alert source, severity, and timestamp.
 - Identify asset owner and business criticality.
@@ -62,3 +62,9 @@ Use of keylogging software may be in direct and explicit violation of local laws
 - Write a brief timeline with UTC timestamps.
 - List root cause (if known) or most probable cause.
 - Capture lessons learned and follow-up tasks.
+
+
+
+
+
+

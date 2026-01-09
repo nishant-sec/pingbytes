@@ -1,4 +1,5 @@
 ---
+category: networking
 title: "Subnettinggggggggggggggggggggggggggggggggggggg"
 description: "CIDR math with examples to build muscle memory."
 date: 2025-01-04
@@ -432,3 +433,8 @@ flowchart TD
 ```bash
 
 ```
+
+
+
+
+

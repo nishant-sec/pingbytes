@@ -28,7 +28,7 @@ const { items, title = 'In this folder', currentPostId } = Astro.props
         return (
           <li>
             <Link
-              href={`/wiki/${child.id}`}
+              href={`/resources/${child.id}`}
               class={cn(
                 'group block -mx-2 rounded-xl border border-transparent px-4 py-4 shadow-none transition-all duration-300 hover:-translate-y-0.5 hover:border-border/50 hover:bg-muted/40 hover:shadow-sm',
                 isActive && 'border-border/60 bg-muted/30 text-primary'

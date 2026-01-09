@@ -3,7 +3,6 @@ import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import PageHead from '@/components/PageHead.astro'
 import Layout from '@/layouts/Layout.astro'
 import Link from '@/components/Link.astro'
-import { Icon } from 'astro-icon/components'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { getAllWikiPosts, getWikiTree } from '@/lib/data-utils'
 
@@ -25,36 +24,24 @@ const topLevelFolders = wikiTree
       description:
         indexPost?.data.description ||
         'Browse the resources inside this folder.',
-      href: `/wiki/${indexPost ? indexPost.id : node.id}`,
+      href: `/resources/${indexPost ? indexPost.id : node.id}`,
       count: node.children.length,
     }
   })
 
-const categories = Array.from(
-  new Set(
-    [
-      ...topLevelFolders.map((folder) => folder.title).filter(Boolean),
-      'Networking',
-      'Automation',
-      'DevOps',
-      'Security',
-      'Linux',
-      'Windows',
-      'Cloud',
-      'Kubernetes',
-      'Containers',
-      'Monitoring',
-      'Observability',
-      'SRE',
-      'CI/CD',
-      'Databases',
-      'Identity',
-      'Compliance',
-      'Performance',
-      'Storage',
-    ],
-  ),
-)
+const categorySet = new Set<string>()
+posts.forEach((post) => {
+  const cat = (post.data as any).category
+  if (cat) categorySet.add(cat)
+})
+
+if (categorySet.size === 0) {
+  topLevelFolders.forEach((folder) => {
+    if (folder.title) categorySet.add(folder.title)
+  })
+}
+
+const categories = Array.from(categorySet)
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -90,10 +77,9 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
               <span id="mobile-categories-current">Notes & Resource Categories</span>
             </span>
             <span class="text-muted-foreground ml-2">
-              <Icon
-                name="lucide:chevron-down"
-                class="h-4 w-4 transition-transform duration-200 group-open:rotate-180"
-              />
+              <svg class="h-4 w-4 transition-transform duration-200 group-open:rotate-180" aria-hidden="true">
+                <use href="/icons.svg#arrow-right" />
+              </svg>
             </span>
           </div>
         </summary>
@@ -200,10 +186,12 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
                 {folder.description}
               </p>
             </div>
-            <Icon
-              name="lucide:arrow-up-right"
+            <svg
               class="mt-1 size-4 shrink-0 text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
-            />
+              aria-hidden="true"
+            >
+              <use href="/icons.svg#arrow-right" />
+            </svg>
           </div>
         </Link>
       ))}
@@ -353,9 +341,9 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
       document.addEventListener(eventName, handler)
     }
 
-    if (!window.__wikiCategoriesBound) {
+    if (!window.__resourcesCategoriesBound) {
       document.addEventListener('click', handleClick, true)
-      window.__wikiCategoriesBound = true
+      window.__resourcesCategoriesBound = true
     }
 
     bindOnce('astro:page-load')
@@ -363,4 +351,3 @@ const hiddenRootCategories = categories.slice(MAX_VISIBLE_CATEGORIES)
     setTimeout(() => applyFilter('all'), 0)
   })()
 </script>
-

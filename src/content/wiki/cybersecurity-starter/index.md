@@ -1,11 +1,11 @@
 ---
+category: security
 title: "Cybersecurity Starter Kit"
 description: "Intro labs, incident basics, and investigation habits for newcomers."
 date: 2025-01-04
 tags: ["security", "beginner"]
 draft: false
 ---
-
 ## Overview
 This starter kit is designed to be scrollable and nested so you can test the wiki navigation. Two folders cover lab setup and incident basics.
 
@@ -23,3 +23,9 @@ This starter kit is designed to be scrollable and nested so you can test the wik
 2. Keep raw notes and summarize separately.
 3. Work from least- to most-destructive actions.
 4. Validate assumptions with two signals (log + packet, alert + metric).
+
+
+
+
+
+

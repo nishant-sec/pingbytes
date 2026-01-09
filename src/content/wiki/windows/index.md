@@ -1,11 +1,10 @@
 ---
+category: windows
 title: "Windows Operations Hub"
 description: "Admin tips for PowerShell, services, and security hardening on Windows hosts."
 date: 2025-01-04
-tags: ["windows", "ops"]
-draft: false
+draft: true
 ---
-
 ## Overview
 This hub tracks common Windows operations tasks with two nested folders: automation via PowerShell and baseline hardening. Use it to check how the navigation tree behaves with deeper folders.
 
@@ -34,3 +33,9 @@ This hub tracks common Windows operations tasks with two nested folders: automat
 3. Check recent Windows Updates or GPO changes.
 4. Test restart and confirm dependent services.
 5. Document the findings and remediation.
+
+
+
+
+
+

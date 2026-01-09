@@ -47,7 +47,7 @@ export const GET: APIRoute = async () => {
           date: post.data.date?.toISOString() || new Date().toISOString(),
           tags: post.data.tags || [],
           authors: post.data.authors || [],
-          url: `/wiki/${post.id}`,
+          url: `/resources/${post.id}`,
           content: textContent,
         }
       }),

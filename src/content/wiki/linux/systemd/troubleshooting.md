@@ -1,11 +1,11 @@
 ---
+category: linux
 title: "Systemd Troubleshooting"
 description: "Quick flow to debug failing services with systemctl and journalctl."
 date: 2025-01-04
 tags: ["linux", "systemd", "troubleshooting"]
 draft: false
 ---
-
 ## Fast status pass
 - `systemctl status app.service` — check unit state and last log lines
 - `systemctl list-dependencies app.service` — ensure wants/requires are present
@@ -42,3 +42,9 @@ Capture:
 2. Unit file (including drop-ins).
 3. Relevant journal excerpt.
 4. Recent config diff or deployment notes.
+
+
+
+
+
+

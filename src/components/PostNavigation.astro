@@ -32,7 +32,7 @@ const resolvedNextLabel =
 const getHref = (post: PostEntry | null) => {
   if (!post) return '#'
   const base =
-    post.collection && post.collection === 'wiki' ? '/wiki' : '/blog'
+    post.collection && post.collection === 'wiki' ? '/resources' : '/blog'
   const hash = post.collection === 'blog' ? '#post-title' : ''
   return `${base}/${post.id}${hash}`
 }

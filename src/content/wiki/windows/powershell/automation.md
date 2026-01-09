@@ -1,11 +1,11 @@
 ---
+category: windows
 title: "PowerShell Automation"
 description: "Remoting, scripting hygiene, and transcript logging for repeatable Windows operations."
 date: 2025-01-04
 tags: ["windows", "powershell", "automation"]
 draft: false
 ---
-
 ## Remoting basics
 - Enable: `Enable-PSRemoting -Force`
 - Test: `Enter-PSSession -ComputerName server1`
@@ -39,3 +39,9 @@ Invoke-Command -ComputerName $servers -ScriptBlock {
   $svcObj.Status
 } -ArgumentList $svc -Verbose
 ```
+
+
+
+
+
+

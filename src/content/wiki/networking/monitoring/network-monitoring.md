@@ -1,11 +1,11 @@
 ---
+category: networking
 title: "Network Monitoring Quickstart"
 description: "Low-friction ways to capture signals when debugging connectivity."
 date: 2025-01-04
 tags: ["networking", "monitoring"]
 draft: false
 ---
-
 ## Layered approach
 - **Connectivity:** `ping -c 3 target`, `Test-NetConnection` on Windows.
 - **Path:** `mtr -rw target` for loss/latency trends.
@@ -33,3 +33,9 @@ draft: false
 3. Trace route or MTR snapshot.
 4. Packet capture excerpt or summary.
 5. Recent changes in DNS, ACLs, or deployments.
+
+
+
+
+
+

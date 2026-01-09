@@ -1,11 +1,10 @@
 ---
+category: linux
 title: "Linux Operations Hub"
 description: "Command-line fundamentals, service management, and troubleshooting workflows for Linux hosts."
 date: 2025-01-04
-tags: ["linux", "ops"]
 draft: false
 ---
-
 ## Overview
 This hub collects practical Linux notes you can reference during on-call and project work. The two nested folders cover shell essentials and systemd troubleshooting with longer walkthroughs to exercise the navigation and TOC.
 
@@ -47,3 +46,9 @@ This hub collects practical Linux notes you can reference during on-call and pro
 3. Validate dependencies (network, disk, env vars).
 4. Apply smallest safe change; capture the diff/command.
 5. Re-test, roll back if needed, and document the fix.
+
+
+
+
+
+

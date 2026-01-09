@@ -1,11 +1,11 @@
 ---
+category: networking
 title: "Networking Fundamentals"
 description: "Subnetting, routing, and monitoring workflows for on-call triage."
 date: 2025-01-04
 tags: ["networking"]
 draft: false
 ---
-
 ## Overview
 Use this folder to explore network basics with enough length to exercise the wiki navigation. The nested folders cover subnetting practice and lightweight monitoring.
 
@@ -23,3 +23,9 @@ Use this folder to explore network basics with enough length to exercise the wik
 2. Test path to dependency endpoints.
 3. Check ACLs/firewall rules on both sides.
 4. Inspect recent network changes.
+
+
+
+
+
+

@@ -1,11 +1,11 @@
 ---
+category: security
 title: "Lab Setup"
 description: "Build a small home lab for safe practice with logging and attacks."
 date: 2025-01-04
 tags: ["security", "labs"]
 draft: false
 ---
-
 ## Lab goals
 - Isolated playground to avoid touching production.
 - Repeatable builds using snapshots.
@@ -199,3 +199,9 @@ draft: false
 - Keep host-only networking unless you need internet for updates.
 - Rate-limit or firewall outbound traffic from the lab.
 - Change default creds on all images.
+
+
+
+
+
+

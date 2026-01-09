@@ -1,10 +1,10 @@
 ---
+category: playbooks
 title: "Incident Handoff"
 description: "A quick script for passing an active incident to the next responder."
 date: 2024-12-17
 order: 2
 ---
-
 ## Before the handoff
 - Write a three-sentence summary of impact, scope, and mitigation so far.
 - List top open questions and blocked tasks.
@@ -18,3 +18,8 @@ order: 2
 ## Afterward
 - Update the incident doc and pin the summary in chat.
 - Stay available for 10 minutes in case of gaps.
+
+
+
+
+

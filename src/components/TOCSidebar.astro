@@ -8,11 +8,11 @@ type Props = {
   sections: TOCSection[]
   currentPostId: string
   className?: string
-  basePath?: '/blog' | '/wiki'
+  basePath?: '/blog' | '/resources'
 }
 
 const { sections, currentPostId, className, basePath = '/blog' } = Astro.props
-const isWiki = basePath === '/wiki'
+const isWiki = basePath === '/resources'
 const isCurrentSubpost = isWiki ? false : isSubpost(currentPostId)
 const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
 ---

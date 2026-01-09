@@ -1,11 +1,11 @@
 ---
+category: linux
 title: "CLI Essentials"
 description: "Navigation, file operations, process inspection, and networking commands you’ll use every day."
 date: 2025-01-04
 tags: ["linux", "cli"]
 draft: false
 ---
-
 ## Navigation and files
 - `pwd` — show working directory
 - `ls -lha` — list with permissions and sizes
@@ -43,3 +43,9 @@ alias ll='ls -lha --group-directories-first'
 alias cls='clear && printf "\\033c"'
 alias ktop='kubectl top pod'
 ```
+
+
+
+
+
+
