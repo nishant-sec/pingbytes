@@ -11,7 +11,6 @@ import MobileSectionsHeader from '@/components/MobileSectionsHeader.astro'
 import { Button } from '@/components/ui/button'
 import Layout from '@/layouts/Layout.astro'
 import { getAllWikiPosts, parseAuthors, getWikiTree, setActiveFlags, getAdjacentWikiPosts } from '@/lib/data-utils'
-import { formatDate } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
 import SmartImage from '@/components/SmartImage.astro'
 import { render } from 'astro:content'
@@ -37,9 +36,6 @@ setActiveFlags(wikiTree, currentPostId)
 
 // Render content and headings
 const { Content, headings } = await render(post)
-
-// Authors
-const authors = await parseAuthors(post.data.authors ?? [])
 
 const tocSections = [
   {

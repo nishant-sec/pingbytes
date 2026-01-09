@@ -1,6 +1,5 @@
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
-import Link from '@/components/Link.astro'
 import PostHead from '@/components/PostHead.astro'
 import PostNavigation from '@/components/PostNavigation.astro'
 import RelatedPosts from '@/components/RelatedPosts.astro'
@@ -56,12 +55,6 @@ try {
 
 // Error handling for authors parsing
 let authors: Awaited<ReturnType<typeof parseAuthors>> = []
-try {
-  authors = await parseAuthors(post.data.authors ?? [])
-} catch (error) {
-  console.error('Error parsing authors:', error)
-  // Continue with empty authors array
-}
 
 const isCurrentSubpost = isSubpost(currentPostId)
 
