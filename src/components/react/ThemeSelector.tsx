@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
+import { Sun, Moon } from 'lucide-react'
 import {
   COLOR_PALETTES,
   DEFAULT_PALETTE,
@@ -23,19 +24,6 @@ import {
 interface ThemeSelectorProps {
   className?: string
 }
-
-const IconSun = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <circle cx="12" cy="12" r="4" />
-    <path d="M12 2v2m0 16v2m10-10h-2M4 12H2m15.364-7.364-1.414 1.414M8.05 15.95l-1.414 1.414m0-13.778 1.414 1.414m9.9 9.9 1.414 1.414" />
-  </svg>
-)
-
-const IconMoon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
-  </svg>
-)
 
 const IconPalette = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -133,16 +121,16 @@ export default function ThemeSelector({ className }: ThemeSelectorProps = {}) {
           variant="ghost"
           size="icon"
           title="Theme & appearance"
-          className={cn(
+            className={cn(
             "size-9 rounded-full transition-all duration-200 hover:bg-foreground/5",
             className
           )}
           aria-label="Theme & appearance"
         >
           {currentTheme === 'dark' ? (
-            <IconMoon className="h-[1.1rem] w-[1.1rem] transition-all" aria-hidden="true" />
+            <Moon className="h-[1.1rem] w-[1.1rem] transition-all" aria-hidden="true" />
           ) : (
-            <IconSun className="h-[1.1rem] w-[1.1rem] transition-all" aria-hidden="true" />
+            <Sun className="h-[1.1rem] w-[1.1rem] transition-all" aria-hidden="true" />
           )}
           <span className="sr-only">Theme & appearance</span>
         </Button>
@@ -173,9 +161,9 @@ export default function ThemeSelector({ className }: ThemeSelectorProps = {}) {
                 aria-pressed={currentTheme === theme}
               >
                 {theme === 'dark' ? (
-                  <IconMoon className="size-3.5" />
+                  <Moon className="size-3.5" />
                 ) : (
-                  <IconSun className="size-3.5" />
+                  <Sun className="size-3.5" />
                 )}
                 <span className="capitalize">{theme}</span>
               </button>
@@ -226,4 +214,3 @@ export default function ThemeSelector({ className }: ThemeSelectorProps = {}) {
     </DropdownMenu>
   )
 }
-

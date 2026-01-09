@@ -17,6 +17,7 @@ const SearchButton: React.FC = () => {
     | React.ComponentType<{ open: boolean; onOpenChange: (open: boolean) => void }>
   >(null)
   const [isDialogLoading, setIsDialogLoading] = useState(false)
+  const [openAfterLoad, setOpenAfterLoad] = useState(false)
 
   // Keyboard shortcut: Cmd/Ctrl + K
   useEffect(() => {
@@ -45,11 +46,19 @@ const SearchButton: React.FC = () => {
       setDialogComp(() => mod.default)
     } finally {
       setIsDialogLoading(false)
+      if (openAfterLoad) {
+        setIsOpen(true)
+        setOpenAfterLoad(false)
+      }
     }
   }
 
   const handleOpen = () => {
-    setIsOpen(true)
+    if (DialogComp) {
+      setIsOpen(true)
+      return
+    }
+    setOpenAfterLoad(true)
     loadDialog()
   }
 
