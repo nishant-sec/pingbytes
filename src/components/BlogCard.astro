@@ -35,6 +35,21 @@ const fallbackImage = '/og-default.png'
       </div>
 
       <div class="flex flex-wrap items-center gap-x-3 gap-y-2 text-[11px] font-medium text-muted-foreground/60">
+        <span class="flex items-center gap-2">
+          <SmartImage
+            src="/about.avif"
+            alt="Nishant Chavan"
+            width={24}
+            height={24}
+            class="size-5 rounded-full"
+            loading="lazy"
+            decoding="async"
+            sizes="24px"
+            fallbackSrc="/about.avif"
+          />
+          <span class="uppercase tracking-wider text-foreground/80">Nishant Chavan</span>
+        </span>
+
         <time
           datetime={entry.data.date.toISOString()}
           class="flex items-center gap-1.5 uppercase tracking-wider"

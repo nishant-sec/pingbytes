@@ -11,6 +11,7 @@ import MobileSectionsHeader from '@/components/MobileSectionsHeader.astro'
 import { Button } from '@/components/ui/button'
 import Layout from '@/layouts/Layout.astro'
 import { getAllWikiPosts, parseAuthors, getWikiTree, setActiveFlags, getAdjacentWikiPosts } from '@/lib/data-utils'
+import { formatDate } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
 import SmartImage from '@/components/SmartImage.astro'
 import { render } from 'astro:content'
@@ -137,28 +138,22 @@ const nextNavLabel = navigation.nextSectionTitle
             {post.data.title}
           </h1>
 
-          {authors.length > 0 && (
-            <div class="text-muted-foreground divide-border flex flex-col items-start justify-start gap-2 text-xs sm:flex-row sm:flex-wrap sm:divide-x sm:divide-y-0 sm:text-sm">
-              <div class="flex items-center gap-x-2 py-1 sm:px-2">
-                {authors.map((author) => (
-                  <div class="flex items-center gap-x-1.5">
-                    <SmartImage
-                      src={author.avatar}
-                      alt={author.name}
-                      width={20}
-                      height={20}
-                      class="rounded-full"
-                      loading="lazy"
-                      decoding="async"
-                      sizes="20px"
-                      fallbackSrc="/og-default.webp"
-                    />
-                    <span>{author.name}</span>
-                  </div>
-                ))}
-              </div>
+          <div class="text-muted-foreground flex flex-wrap items-center gap-3 text-xs sm:text-sm">
+            <div class="flex items-center gap-2">
+              <SmartImage
+                src="/about.avif"
+                alt="Nishant Chavan"
+                width={24}
+                height={24}
+                class="size-6 rounded-full"
+                loading="lazy"
+                decoding="async"
+                sizes="24px"
+                fallbackSrc="/about.avif"
+              />
+              <span class="text-foreground font-medium">Nishant Chavan</span>
             </div>
-          )}
+          </div>
 
         </div>
       </section>
